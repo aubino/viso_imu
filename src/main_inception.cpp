@@ -5,6 +5,8 @@
 #include <thread>
 #include <mutex>
 #include <chrono>
+#define PI 3.14159265359
+#define G 9.81
 bool sigterm = 0;
 // Image stream acquisition 
 std::string gstreamer_pipeline (int capture_width, int capture_height, int display_width, int display_height, int framerate, int flip_method) {
@@ -43,10 +45,73 @@ std::mutex imu_stack_mutex;
 void imu_tread(doudle period)
 {
     /*Set up the imu sdk if necessary*/
+    IMU_EN_SENSOR_TYPE enMotionSensorType;
+	IMU_ST_ANGLES_DATA stAngles;
+	IMU_ST_SENSOR_DATA stGyroRawData;
+	IMU_ST_SENSOR_DATA stAccelRawData;
+	IMU_ST_SENSOR_DATA stMagnRawData;
+
+	imuInit(&enMotionSensorType);
+	if(IMU_EN_SENSOR_TYPE_ICM20948 == enMotionSensorType)
+	{
+		printf("Motion sersor is ICM-20948\n" );
+	}
+	else
+	{
+		printf("Motion sersor NULL\n");
+	}
+    //End of seting up imu sdk
     imu_stack.sampling_period = period; 
     while(!sigterm)
     {
-        Imu measure /*= get raw measurements from sdk*/ ;
+        imuDataGet( &stAngles, &stGyroRawData, &stAccelRawData, &stMagnRawData);
+        time_t t = time(NULL);
+        if(imu_stack_mutex.try_lock())
+        {
+            if(imu_stack.absolute_queue.size()==0)
+            { //first transfrom to stack. 
+                Imu measure("imuFrame");
+                measure.stamp_from= t;
+                measure.Update_state(stAccelRawData.fX*G,
+                    stAccelRawData.fY*G,
+                    stAccelRawData.fZ*G,
+                    stGyroRawData.fX*PI/180,
+                    stGyroRawData.fY*PI/180,
+                    stGyroRawData.fZ*PI/180,
+                    stAngles.fRoll*PI/180,
+                    stAngles.fPitch*PI/180,
+                    stAngles.fYaw*PI/180,time(NULL));
+                imu_stack.absolute_queue.push_front(measure);
+                imu_stack_mutex.unlock();
+                std::this_thread::sleep_for (std::chrono::seconds(period));
+
+            }
+            else()
+            {
+                Imu measure = imu_stack.absolute_queue[0];
+                Eigen::Vector3d P(measure.state_vector[0],measure.state_vector[1],measure.state_vector[2]);
+                Imu measurediff(measure.name);
+                measurediff.stamp_from=measure.stamp_to;
+                measurediff.Update_state(stAccelRawData.fX*G,
+                    stAccelRawData.fY*G,
+                    stAccelRawData.fZ*G,
+                    stGyroRawData.fX*PI/180,
+                    stGyroRawData.fY*PI/180,
+                    stGyroRawData.fZ*PI/180,
+                    stAngles.fRoll*PI/180,
+                    stAngles.fPitch*PI/180,
+                    stAngles.fYaw*PI/180,t);
+                Eigen::Transform<double,3,Eigen::Isometry> difftrans = Translation<double,3>(measurediff.state_vector[0],measurediff.state_vector[1],measurediff.state_vector[2])*(measurediff.q*measure.q.inverse()).toRotationMatrix();
+                Eigen::Vector3d NEWP = difftrans*P;
+                measurediff.state_vector[0] = NEWP[0];
+                measurediff.state_vector[1] = NEWP[1];
+                measurediff.state_vector[2] = NEWP[2];
+                imu_stack.absolute_queue.push_front(measurediff);
+                imu_stack_mutex.unlock();
+                std::this_thread::sleep_for (std::chrono::seconds(period));
+            }
+            
+        }
          
     }
 }
@@ -97,6 +162,19 @@ void viso_thread(std::string csi_pipeline, std::string config_file)
 
 int main(int argc , char** argv)
 {
-    // Arguments list( in order) -config file for camera calib -others  
+    // Arguments list( in order) -config file for camera calib -others
+    std::string config_file;
+
+    if(argc ==0) std::cout<<"Unspecified config file or any other argument"<<std::endl;
+    else
+    {
+        config_file = argv[0];
+    }
     signal(SIGINT, signal_callback_handler); //to catch the sigterm if needed;
+    std::thread t1(viso_thread,pipeline,config_file);
+    std::thread t2(imu_tread,0.01);
+    t1.join();
+    t2.join(); 
+    return 1;
+
 }

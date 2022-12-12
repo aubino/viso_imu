@@ -2,6 +2,7 @@
 #include <time.h>
 #include <Eigen/Geometry> 
 #include <boost/circular_buffer.hpp>
+#include "ICM20948.h"
 #pragma once 
 
 /*Here you must enter the include to the imu sdk you are using. Here i will use the imu embedded with the imx219-83 stareo camera compatible with jetson nano*/
