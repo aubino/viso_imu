@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/aubin/viso_imu/src/ICM20948.cpp
+ICM20948.h
+/home/aubin/viso_imu/src/ICM20948.h
+
+/home/aubin/viso_imu/src/main.cpp
+ICM20948.h
+/home/aubin/viso_imu/src/ICM20948.h
+
+include/ICM20948.h
+stdio.h
+-
+unistd.h
+-
+string.h
+-
+stdlib.h
+-
+linux/i2c-dev.h
+-
+sys/ioctl.h
+-
+sys/types.h
+-
+fcntl.h
+-
+stdint.h
+-
+stddef.h
+-
+math.h
+-
+
