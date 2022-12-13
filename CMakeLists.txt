@@ -9,7 +9,8 @@ set(CMAKE_HAVE_THREADS_LIBRARY 1)
 set(CMAKE_USE_WIN32_THREADS_INIT 0)
 set(CMAKE_USE_PTHREADS_INIT 1)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
-#################################################
+#######################Debug options ##########################
+set(CMAKE_BUILD_TYPE  Debug)
 
 add_compile_options(-std=c++17 -Wall -lm)
 set( EIGEN3_INCLUDE_DIR "$ENV{EIGEN3_INCLUDE_DIR}" )
