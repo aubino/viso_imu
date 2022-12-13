@@ -6,5 +6,5 @@ CXX_FLAGS =   -std=c++17 -Wall -lm
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/usr/include/eigen3 -I/home/aubin/viso_imu/include -isystem /usr/include/opencv4 
+CXX_INCLUDES = -I/usr/include/eigen3 -I/home/aubin/viso_imu/include -I/usr/include/opencv4 
 

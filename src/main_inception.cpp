@@ -1,4 +1,5 @@
 #include "imu.h"
+#include <iostream>
 #include "transform_computer.hpp"
 #include "image.h"
 #include <signal.h>
@@ -29,10 +30,9 @@ std::string pipeline = gstreamer_pipeline(capture_width,
 	display_height,
 	framerate,
 	flip_method);
-    std::cout << "Using pipeline: \n\t" << pipeline << "\n";
-// Sigterm callback handler 
+
 void signal_callback_handler(int signum) {
-   cout << "Caught signal " << signum << endl;
+   std::cout << "Caught signal " << signum << std::endl;
    // Terminate program
    sigterm = 1;
    exit(signum);
@@ -42,7 +42,7 @@ std::shared_ptr<Imu> imu_ptr;
 ImuQueue imu_stack(imu_ptr,0.1,10000);
 std::mutex imu_stack_mutex;
 
-void imu_tread(doudle period)
+void imu_tread(double period)
 {
     /*Set up the imu sdk if necessary*/
     IMU_EN_SENSOR_TYPE enMotionSensorType;
@@ -83,10 +83,10 @@ void imu_tread(doudle period)
                     stAngles.fYaw*PI/180,time(NULL));
                 imu_stack.absolute_queue.push_front(measure);
                 imu_stack_mutex.unlock();
-                std::this_thread::sleep_for (std::chrono::seconds(period));
-
+                int slp_for = period*1000;
+                std::this_thread::sleep_for (std::chrono::milliseconds(slp_for));
             }
-            else()
+            else
             {
                 Imu measure = imu_stack.absolute_queue[0];
                 Eigen::Vector3d P(measure.state_vector[0],measure.state_vector[1],measure.state_vector[2]);
@@ -101,14 +101,15 @@ void imu_tread(doudle period)
                     stAngles.fRoll*PI/180,
                     stAngles.fPitch*PI/180,
                     stAngles.fYaw*PI/180,t);
-                Eigen::Transform<double,3,Eigen::Isometry> difftrans = Translation<double,3>(measurediff.state_vector[0],measurediff.state_vector[1],measurediff.state_vector[2])*(measurediff.q*measure.q.inverse()).toRotationMatrix();
+                Eigen::Transform<double,3,Eigen::Affine> difftrans = Eigen::Translation<double,3>(measurediff.state_vector[0],measurediff.state_vector[1],measurediff.state_vector[2])*(measurediff.q*measure.q.inverse()).toRotationMatrix();
                 Eigen::Vector3d NEWP = difftrans*P;
                 measurediff.state_vector[0] = NEWP[0];
                 measurediff.state_vector[1] = NEWP[1];
                 measurediff.state_vector[2] = NEWP[2];
                 imu_stack.absolute_queue.push_front(measurediff);
                 imu_stack_mutex.unlock();
-                std::this_thread::sleep_for (std::chrono::seconds(period));
+                int slp_for = period*1000;
+                std::this_thread::sleep_for (std::chrono::milliseconds(slp_for));
             }
             
         }
@@ -119,12 +120,12 @@ void imu_tread(doudle period)
 void viso_thread(std::string csi_pipeline, std::string config_file)
 {   
     cv::VideoCapture cap(csi_pipeline, cv::CAP_GSTREAMER);
-    cv::FileStorage fs(config_file,FileStorage::READ);
+    cv::FileStorage fs(config_file,cv::FileStorage::READ);
     cv::Mat intrinsics, distorsion; 
     if(fs.isOpened ())
     {
-        intrinsics = fs["cameraMatrix"];
-        distorsion = fs["distCoeffs"];
+        fs["cameraMatrix"]>>intrinsics;
+        fs["distCoeffs"]>>distorsion;
     }
     else
     {
@@ -162,6 +163,7 @@ void viso_thread(std::string csi_pipeline, std::string config_file)
 
 int main(int argc , char** argv)
 {
+    std::cout << "Using pipeline: \n\t" << pipeline << "\n";
     // Arguments list( in order) -config file for camera calib -others
     std::string config_file;
 

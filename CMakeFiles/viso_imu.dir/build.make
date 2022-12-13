@@ -60,80 +60,80 @@ include CMakeFiles/viso_imu.dir/flags.make
 CMakeFiles/viso_imu.dir/src/detector.cpp.o: CMakeFiles/viso_imu.dir/flags.make
 CMakeFiles/viso_imu.dir/src/detector.cpp.o: src/detector.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aubin/viso_imu/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/viso_imu.dir/src/detector.cpp.o"
-	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/viso_imu.dir/src/detector.cpp.o -c /home/aubin/viso_imu/src/detector.cpp
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/viso_imu.dir/src/detector.cpp.o -c /home/aubin/viso_imu/src/detector.cpp
 
 CMakeFiles/viso_imu.dir/src/detector.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/viso_imu.dir/src/detector.cpp.i"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aubin/viso_imu/src/detector.cpp > CMakeFiles/viso_imu.dir/src/detector.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aubin/viso_imu/src/detector.cpp > CMakeFiles/viso_imu.dir/src/detector.cpp.i
 
 CMakeFiles/viso_imu.dir/src/detector.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/viso_imu.dir/src/detector.cpp.s"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aubin/viso_imu/src/detector.cpp -o CMakeFiles/viso_imu.dir/src/detector.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aubin/viso_imu/src/detector.cpp -o CMakeFiles/viso_imu.dir/src/detector.cpp.s
 
 CMakeFiles/viso_imu.dir/src/ICM20948.cpp.o: CMakeFiles/viso_imu.dir/flags.make
 CMakeFiles/viso_imu.dir/src/ICM20948.cpp.o: src/ICM20948.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aubin/viso_imu/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/viso_imu.dir/src/ICM20948.cpp.o"
-	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/viso_imu.dir/src/ICM20948.cpp.o -c /home/aubin/viso_imu/src/ICM20948.cpp
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/viso_imu.dir/src/ICM20948.cpp.o -c /home/aubin/viso_imu/src/ICM20948.cpp
 
 CMakeFiles/viso_imu.dir/src/ICM20948.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/viso_imu.dir/src/ICM20948.cpp.i"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aubin/viso_imu/src/ICM20948.cpp > CMakeFiles/viso_imu.dir/src/ICM20948.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aubin/viso_imu/src/ICM20948.cpp > CMakeFiles/viso_imu.dir/src/ICM20948.cpp.i
 
 CMakeFiles/viso_imu.dir/src/ICM20948.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/viso_imu.dir/src/ICM20948.cpp.s"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aubin/viso_imu/src/ICM20948.cpp -o CMakeFiles/viso_imu.dir/src/ICM20948.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aubin/viso_imu/src/ICM20948.cpp -o CMakeFiles/viso_imu.dir/src/ICM20948.cpp.s
 
 CMakeFiles/viso_imu.dir/src/imu.cpp.o: CMakeFiles/viso_imu.dir/flags.make
 CMakeFiles/viso_imu.dir/src/imu.cpp.o: src/imu.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aubin/viso_imu/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/viso_imu.dir/src/imu.cpp.o"
-	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/viso_imu.dir/src/imu.cpp.o -c /home/aubin/viso_imu/src/imu.cpp
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/viso_imu.dir/src/imu.cpp.o -c /home/aubin/viso_imu/src/imu.cpp
 
 CMakeFiles/viso_imu.dir/src/imu.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/viso_imu.dir/src/imu.cpp.i"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aubin/viso_imu/src/imu.cpp > CMakeFiles/viso_imu.dir/src/imu.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aubin/viso_imu/src/imu.cpp > CMakeFiles/viso_imu.dir/src/imu.cpp.i
 
 CMakeFiles/viso_imu.dir/src/imu.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/viso_imu.dir/src/imu.cpp.s"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aubin/viso_imu/src/imu.cpp -o CMakeFiles/viso_imu.dir/src/imu.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aubin/viso_imu/src/imu.cpp -o CMakeFiles/viso_imu.dir/src/imu.cpp.s
 
 CMakeFiles/viso_imu.dir/src/main_inception.cpp.o: CMakeFiles/viso_imu.dir/flags.make
 CMakeFiles/viso_imu.dir/src/main_inception.cpp.o: src/main_inception.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aubin/viso_imu/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/viso_imu.dir/src/main_inception.cpp.o"
-	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/viso_imu.dir/src/main_inception.cpp.o -c /home/aubin/viso_imu/src/main_inception.cpp
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/viso_imu.dir/src/main_inception.cpp.o -c /home/aubin/viso_imu/src/main_inception.cpp
 
 CMakeFiles/viso_imu.dir/src/main_inception.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/viso_imu.dir/src/main_inception.cpp.i"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aubin/viso_imu/src/main_inception.cpp > CMakeFiles/viso_imu.dir/src/main_inception.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aubin/viso_imu/src/main_inception.cpp > CMakeFiles/viso_imu.dir/src/main_inception.cpp.i
 
 CMakeFiles/viso_imu.dir/src/main_inception.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/viso_imu.dir/src/main_inception.cpp.s"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aubin/viso_imu/src/main_inception.cpp -o CMakeFiles/viso_imu.dir/src/main_inception.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aubin/viso_imu/src/main_inception.cpp -o CMakeFiles/viso_imu.dir/src/main_inception.cpp.s
 
 CMakeFiles/viso_imu.dir/src/matcher.cpp.o: CMakeFiles/viso_imu.dir/flags.make
 CMakeFiles/viso_imu.dir/src/matcher.cpp.o: src/matcher.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aubin/viso_imu/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/viso_imu.dir/src/matcher.cpp.o"
-	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/viso_imu.dir/src/matcher.cpp.o -c /home/aubin/viso_imu/src/matcher.cpp
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/viso_imu.dir/src/matcher.cpp.o -c /home/aubin/viso_imu/src/matcher.cpp
 
 CMakeFiles/viso_imu.dir/src/matcher.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/viso_imu.dir/src/matcher.cpp.i"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aubin/viso_imu/src/matcher.cpp > CMakeFiles/viso_imu.dir/src/matcher.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aubin/viso_imu/src/matcher.cpp > CMakeFiles/viso_imu.dir/src/matcher.cpp.i
 
 CMakeFiles/viso_imu.dir/src/matcher.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/viso_imu.dir/src/matcher.cpp.s"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aubin/viso_imu/src/matcher.cpp -o CMakeFiles/viso_imu.dir/src/matcher.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aubin/viso_imu/src/matcher.cpp -o CMakeFiles/viso_imu.dir/src/matcher.cpp.s
 
 CMakeFiles/viso_imu.dir/src/transform_computer.cpp.o: CMakeFiles/viso_imu.dir/flags.make
 CMakeFiles/viso_imu.dir/src/transform_computer.cpp.o: src/transform_computer.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aubin/viso_imu/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/viso_imu.dir/src/transform_computer.cpp.o"
-	/usr/bin/clang++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/viso_imu.dir/src/transform_computer.cpp.o -c /home/aubin/viso_imu/src/transform_computer.cpp
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/viso_imu.dir/src/transform_computer.cpp.o -c /home/aubin/viso_imu/src/transform_computer.cpp
 
 CMakeFiles/viso_imu.dir/src/transform_computer.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/viso_imu.dir/src/transform_computer.cpp.i"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aubin/viso_imu/src/transform_computer.cpp > CMakeFiles/viso_imu.dir/src/transform_computer.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aubin/viso_imu/src/transform_computer.cpp > CMakeFiles/viso_imu.dir/src/transform_computer.cpp.i
 
 CMakeFiles/viso_imu.dir/src/transform_computer.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/viso_imu.dir/src/transform_computer.cpp.s"
-	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aubin/viso_imu/src/transform_computer.cpp -o CMakeFiles/viso_imu.dir/src/transform_computer.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aubin/viso_imu/src/transform_computer.cpp -o CMakeFiles/viso_imu.dir/src/transform_computer.cpp.s
 
 # Object files for target viso_imu
 viso_imu_OBJECTS = \

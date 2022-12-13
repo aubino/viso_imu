@@ -64,13 +64,13 @@ void Imu::Update_state(double r_ax,double r_ay,double r_az,double r_vyaw,double 
     state_vector[12] = d_yaw;
     state_vector[13] = d_pitch;
     state_vector[14] = d_roll;
-    q = Eigen::AngleAxisf(d_roll, Eigen::Vector3f::UnitX())
-        * Eigen::AngleAxisf(d_pitch, Eigen::Vector3f::UnitY())
-        * Eigen::AngleAxisf(d_yaw, Eigen::Vector3f::UnitZ());
+    q = Eigen::AngleAxisd(d_roll, Eigen::Vector3d::UnitX())
+        * Eigen::AngleAxisd(d_pitch, Eigen::Vector3d::UnitY())
+        * Eigen::AngleAxisd(d_yaw, Eigen::Vector3d::UnitZ());
     stamp_to = t;
 }
 
-void Imu::Update_state(double r_ax,double r_ay,double r_az,double r_vyaw,double r_vpich,double r_vroll,Eigen::Quaternion dq,time_t t)
+void Imu::Update_state(double r_ax,double r_ay,double r_az,double r_vyaw,double r_vpich,double r_vroll,Eigen::Quaternion<double> dq,time_t t)
 {
     ax=r_ax;
     ay=r_ay;
@@ -94,56 +94,59 @@ void Imu::Update_state(double r_ax,double r_ay,double r_az,double r_vyaw,double 
     stamp_to = t;
 }
 
-ImuQueue::ImuQueue(std::shared_ptr imu,double T,int queue_size=10000)
-queue_size(queue_size), 
-relative_queue(queue_size),
-absolute_queue(queue_size),
+ImuQueue::ImuQueue(std::shared_ptr<Imu> imu,double T,int max_size) :
+queue_size(max_size), 
+relative_queue(max_size),
+absolute_queue(max_size),
 sampling_period(T)
 {
     device = imu;   
 }
 
-Eigen::Transform<double,3,Eigen::Isometry> ImuQueue::getTransform(time_t t)
+Eigen::Transform<double,3,Eigen::Affine> ImuQueue::getTransform(time_t t)
 {
     if(absolute_queue.size()>0)
     {
-        if(difftime(time_t ,absolute_queue[0].stamp_to)<0 && difftime(time_t ,absolute_queue[absolute_queue.size()-1].stamp_to)>0)
+        if(difftime(t ,absolute_queue[0].stamp_to)<0 && difftime(t ,absolute_queue[absolute_queue.size()-1].stamp_to)>0)
         {
             for (auto state:absolute_queue)
             {
                 if(t>state.stamp_from && t<=state.stamp_to)
                 {
-                    Eigen::Transform<double,3,Eigen::Isometry> res = Translation<double,3>(state.state_vector[0],state.state_vector[1],state.state_vector[2])*state.q.toRotationMatrix();
+                    Eigen::Transform<double,3,Eigen::Affine> res = Eigen::Translation<double,3>(state.state_vector[0],state.state_vector[1],state.state_vector[2])*state.q.toRotationMatrix();
                     return res;
                 }
             }
         } 
     }
     else 
+    {
         #ifdef DEBUG
             std::cout<<"requested transform out of timestamp range"<<std::endl;
         #endif
+    }
+        
 }
 
-Eigen::Transform<double,3,Eigen::Isometry> get_Transform(time_t t_from, time_t t_to)
+Eigen::Transform<double,3,Eigen::Affine> ImuQueue::get_Transform(time_t t_from, time_t t_to)
 {
     return getTransform(t_to)*getTransform(t_from).inverse();
 }
 
-Eigen::Transform<double,3,Eigen::Isometry> get_OriginTransform()
+Eigen::Transform<double,3,Eigen::Affine> ImuQueue::get_OriginTransform()
 {
-    state = absolute_queue[absolute_queue.size()-1];
-    Eigen::Transform<double,3,Eigen::Isometry> res = Translation<double,3>(state.state_vector[0],state.state_vector[1],state.state_vector[2])*state.q.toRotationMatrix();
+    Imu state = absolute_queue[absolute_queue.size()-1];
+    Eigen::Transform<double,3,Eigen::Affine> res = Eigen::Translation<double,3>(state.state_vector[0],state.state_vector[1],state.state_vector[2])*state.q.toRotationMatrix();
     return res;
 
 }
 
-void stack_absolute(Imu imu)
+void ImuQueue::stack_absolute(Imu imu)
 {
     absolute_queue.push_front(imu);
 }
 
-void stack_relative(Imu imu)
+void ImuQueue::stack_relative(Imu imu)
 {
     relative_queue.push_front(imu);
 }

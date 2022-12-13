@@ -1,5 +1,5 @@
 #include "matcher.hpp"
-std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> match_images(const cv::Mat& img1, const cv::Mat& img2,const int MAX_FEATURES,const float GOOD_MATCH_PERCENT, const std::string matching_method="BruteForce-Hamming")
+std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> match_images(const cv::Mat& img1, const cv::Mat& img2,const int MAX_FEATURES,const float GOOD_MATCH_PERCENT, const std::string matching_method)
 {
     std::vector<cv::DMatch> matches;
     cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(matching_method);
@@ -22,9 +22,8 @@ std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> match_images(const 
 }
 
 #ifdef DEBUG 
-    std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> match_images(const cv::Mat& img1, const cv::Mat& img2,const int MAX_FEATURES,const float GOOD_MATCH_PERCENT, const std::string matching_method="BruteForce-Hamming",cv::String debug_window="matching_debug")
+    std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> match_images(const cv::Mat& img1, const cv::Mat& img2,const int MAX_FEATURES,const float GOOD_MATCH_PERCENT,cv::String debug_window, const std::string matching_method)
     {
-    
         std::vector<cv::DMatch> matches;
     cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(matching_method);
     auto kp_des1 = find_key_points_and_descriptors(img1,MAX_FEATURES);
@@ -44,7 +43,7 @@ std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> match_images(const 
         std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> result;
         result.first= points1; 
         result.second= points2;
-        cv::imshow(debug_window); 
+        cv::imshow(debug_window,img_match_drawn); 
         return result;
     }
 #endif

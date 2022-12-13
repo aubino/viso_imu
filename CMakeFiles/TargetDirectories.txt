@@ -1,5 +1,4 @@
 /home/aubin/viso_imu/CMakeFiles/rebuild_cache.dir
 /home/aubin/viso_imu/CMakeFiles/edit_cache.dir
 /home/aubin/viso_imu/CMakeFiles/imu_test.dir
-/home/aubin/viso_imu/CMakeFiles/viso_imu_test.dir
 /home/aubin/viso_imu/CMakeFiles/viso_imu.dir
