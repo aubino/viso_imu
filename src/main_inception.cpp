@@ -167,11 +167,11 @@ int main(int argc , char** argv)
     std::cout << "Using pipeline: \n\t" << pipeline << "\n";
     // Arguments list( in order) -config file for camera calib -others
     std::string config_file;
-
-    if(argc ==0) std::cout<<"Unspecified config file or any other argument"<<std::endl;
+    std::cout<<"The number of arguments is "<<argc<<std::endl;
+    if(argc ==1) std::cout<<"Unspecified config file or any other argument"<<std::endl;
     else
     {
-        config_file = argv[0];
+        config_file = argv[1];
     }
     signal(SIGINT, signal_callback_handler); //to catch the sigterm if needed;
     std::thread t1(viso_thread,pipeline,config_file);
