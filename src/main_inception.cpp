@@ -24,12 +24,7 @@ int display_height = 720 ;
 int framerate = 30 ;
 int flip_method = 0 ;
 
-std::string pipeline = gstreamer_pipeline(capture_width,
-    capture_height,
-	display_width,
-	display_height,
-	framerate,
-	flip_method);
+
 
 void signal_callback_handler(int signum) {
    std::cout << "Caught signal " << signum << std::endl;
@@ -163,6 +158,12 @@ void viso_thread(std::string csi_pipeline, std::string config_file)
 
 int main(int argc , char** argv)
 {
+    std::string pipeline = gstreamer_pipeline(capture_width,
+    capture_height,
+	display_width,
+	display_height,
+	framerate,
+	flip_method);
     std::cout << "Using pipeline: \n\t" << pipeline << "\n";
     // Arguments list( in order) -config file for camera calib -others
     std::string config_file;
