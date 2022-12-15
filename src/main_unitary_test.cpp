@@ -95,6 +95,11 @@ int main(int argc , char** argv)
         int k = cv::waitKey(0);
         if(k =='q')
             return 0 ;
+        if(k =='p' && i>2)
+        {
+            i--; i--;
+        }
+            
 
     }
 
