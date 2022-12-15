@@ -9,6 +9,8 @@
 #include <boost/filesystem.hpp>
 #include <filesystem>
 #include <vector>
+#include <math.h>
+#include<string>
 
 #define PI 3.14159265359
 #define G 9.81
@@ -21,10 +23,10 @@ namespace fs = boost::filesystem;
 std::vector<std::string> get_all(std::filesystem::path const & root, std::string const & ext)
 {
     std::vector<std::string> paths;
-    for (auto p : fs::recursive_directory_iterator(root))
+    for (auto p : std::filesystem::directory_iterator(root))
     {
         if (p.path().extension() == ext)
-            paths.push_back(std::canonical(p.path()).string());
+            paths.push_back(std::filesystem::canonical(p.path()).string());
     }
     return paths;
 }
@@ -32,30 +34,59 @@ std::vector<std::string> get_all(std::filesystem::path const & root, std::string
 int main(int argc , char** argv)
 {
     std::string right_root,left_root,config_file;
-    if(argc <4) 
+    int nbr_test;
+    if(argc <5) 
     {   std::cout<<"Unspecified config file or any other argument"<<std::endl;
-        return 0; 
+
     }
     else
     {
         left_root = argv[1];
         right_root = argv[2];
         config_file = argv[3];
+        nbr_test = std::stoi(argv[4]);
     }
-    std::vector<std::string>  right_images_vector = get_all(right_root,"jpg");
-    std::vector<std::string> left_images_vector = get_all(left_root,"jpg");
-    for (auto path : right_images_vector)
+    std::vector<std::string>  right_images_vector = get_all(right_root,".jpg");
+    std::vector<std::string> left_images_vector = get_all(left_root,".jpg");
+    /*for (auto path : right_images_vector)
     {
-        right_images_vector.push_back(fs::canonical(path).string());
         std::cout<<"Right images path "<< path<<std::endl;
-
     }
         
     for (auto path :left_images_vector)
     {
-        left_images_vector.push_back(fs::canonical(path).string());
         std::cout<<"Left images path "<< path<<std::endl;
+    }*/
+    std::cout<<  "Left images number "<<left_images_vector.size()<<std::endl; 
+    std::cout<<  "Right images number "<<right_images_vector.size()<<std::endl; 
+    if(nbr_test>left_images_vector.size() || nbr_test>right_images_vector.size())
+    {
+        std::cout<<"Number of test cases superior to datas provided. Will try to take all the datas instead"<<std::endl;
+        nbr_test= std::min(left_images_vector.size(),right_images_vector.size())
     }
-        
+
+    for(int i =0; i<nbr_test; i++)
+    {
+        std::string left_image_path = cv::samples::findFile(left_image_vector[i]);
+        std::string right_image_path = cv::samples::findFile(right_image_vector[i]);
+        cv::Mat left_img = cv::imread(left_image_path, cv::IMREAD_COLOR);
+        cv::Mat right_img = cv::imread(right_image_path, cv::IMREAD_COLOR);
+        if(left_img.empty())
+        {
+            std::cout<<"Could not load the image "<<left_image_path<<std::endl;
+            return 0;
+        }
+        if(right_img.empty())
+        {
+            std::cout<<"Could not load the image "<<left_image_path<<std::endl;
+            return 0;
+        }
+        cv::imshow("Left Image DIsplay", left_img);
+        cv::imshow("Right Image DIsplay", right_img);
+        int k = waitKey(0);
+        if(k =='q')
+            return 0 ;
+
+    }
 
 }
