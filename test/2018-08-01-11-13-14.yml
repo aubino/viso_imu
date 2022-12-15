@@ -62,8 +62,8 @@ R_rect_101: !!opencv-matrix
           1.740523e-02, 4.727053e-03, 9.998373e-01]
 
 S_103: !!opencv-matrix
-  rows: 3
-  cols: 3
+  rows: 1
+  cols: 2
   dt: d
   data : [9.600000e+2, 6.000000e+2]
 K_103: !!opencv-matrix
@@ -93,8 +93,8 @@ T_103: !!opencv-matrix
           -1.009000e-04,
            -3.105000e-03]
 S_rect_103: !!opencv-matrix
-  rows: 3
-  cols: 3
+  rows: 1
+  cols: 2
   dt: d
   data : [8.810000e+2, 4.000000e+2]
 P_rect_103: !!opencv-matrix

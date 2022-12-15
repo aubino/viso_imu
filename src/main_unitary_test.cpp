@@ -30,12 +30,16 @@ std::vector<std::string> get_all(std::filesystem::path const & root, std::string
     return paths;
 }
 
+
 int main(int argc , char** argv)
 {
+    int rows = 3;
+    int cols = 3;
     std::string right_root,left_root,config_file;
     int nbr_test;
     if(argc <5) 
     {   std::cout<<"Unspecified config file or any other argument"<<std::endl;
+        return 0;
 
     }
     else
@@ -67,15 +71,21 @@ int main(int argc , char** argv)
     cv::String cv_config_file(config_file);
     cv::FileStorage fs;
     fs.open(cv_config_file,cv::FileStorage::READ);
-    cv::Mat intrinsics, distorsion, projection;
+    cv::Mat left_intrinsics(rows, cols, cv::DataType<double>::type), 
+            left_distorsion(rows, cols, cv::DataType<double>::type), 
+            left_projection(rows, cols, cv::DataType<double>::type),
+            right_intrinsics(rows, cols, cv::DataType<double>::type),
+            right_distorsion(rows, cols, cv::DataType<double>::type), 
+            right_projection(rows, cols, cv::DataType<double>::type);
     if(fs.isOpened ())
     {
-        fs["camera_matrix"]>>intrinsics;
-        fs["distortion_coefficients"]>>distorsion;
-        fs["projection_matrix"] >> projection;
+        fs["K_101"]>>left_intrinsics;
+        fs["D_101"]>>left_distorsion;
+        fs["K_103"] >> right_intrinsics;
+        fs["D_103"]>>right_distorsion;
     }
-    std::cout<<"Camera matrix of size "<< intrinsics.rows<<std::endl;
-    std::cout<<"Distorsion matrix coefficients "<< distorsion.rows<<std::endl;
+    std::cout<<"Using camera left camera parameters "<< left_intrinsics<<std::endl;
+    std::cout<<"Using camera right camera parameters "<< right_distorsion<<std::endl;
     //----------------------------Loaded files ------------------------//
     for(int i =0; i<nbr_test; i++)
     {
