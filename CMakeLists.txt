@@ -12,7 +12,8 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 #######################Debug options ##########################
 set(CMAKE_BUILD_TYPE  Debug)
 
-add_compile_options(-std=c++17 -Wall -lm)
+add_compile_options(-std=c++17 -Wall -lm -lboost_system)
+set(CMAKE_CXX_STANDARD 17)
 set( EIGEN3_INCLUDE_DIR "$ENV{EIGEN3_INCLUDE_DIR}" )
 set(EIGEN3_INCLUDE_DIR "/usr/include/eigen3")
 
@@ -22,6 +23,7 @@ find_package(Eigen3 )
 
 add_definitions(${OpenCV_DEFINITIONS} 
     ${EIGEN3_DEFINITIONS})
+add_definitions(-DBOOST_ERROR_CODE_HEADER_ONLY)
 
 include_directories( "${EIGEN3_INCLUDE_DIR}" )
 include_directories(${Boost_INCLUDE_DIR})
