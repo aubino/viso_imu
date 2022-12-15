@@ -17,8 +17,6 @@
 #define G 9.81
 #define BOOST_FILESYSTEM_VERSION 3
 #define BOOST_FILESYSTEM_NO_DEPRECATED 
-
-namespace fs = boost::filesystem;
 //Directory navigation inside a file 
 
 std::vector<std::string> get_all(std::filesystem::path const & root, std::string const & ext)
@@ -65,7 +63,20 @@ int main(int argc , char** argv)
         std::cout<<"Number of test cases superior to datas provided. Will try to take all the datas instead"<<std::endl;
         nbr_test= std::min(left_images_vector.size(),right_images_vector.size());
     }
-
+    //------------------------Loading file test -------------//
+    cv::String cv_config_file(config_file);
+    cv::FileStorage fs;
+    fs.open(cv_config_file,cv::FileStorage::READ);
+    cv::Mat intrinsics, distorsion, projection;
+    if(fs.isOpened ())
+    {
+        fs["camera_matrix"]>>intrinsics;
+        fs["distortion_coefficients"]>>distorsion;
+        fs["projection_matrix"] >> projection;
+    }
+    std::cout<<"Camera matrix of size "<< intrinsics.rows<<std::endl;
+    std::cout<<"Distorsion matrix coefficients "<< distorsion.rows<<std::endl;
+    //----------------------------Loaded files ------------------------//
     for(int i =0; i<nbr_test; i++)
     {
         std::string left_image_path = cv::samples::findFile(left_images_vector[i]);
