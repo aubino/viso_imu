@@ -84,8 +84,16 @@ int main(int argc , char** argv)
         fs["K_103"] >> right_intrinsics;
         fs["D_103"]>>right_distorsion;
     }
-    std::cout<<"Using camera left camera parameters "<< left_intrinsics<<std::endl;
-    std::cout<<"Using camera right camera parameters "<< right_distorsion<<std::endl;
+     std::cout<<" -----------------------------------------------------------------------------------------------------------------------"std::endl;
+      std::cout<<" -----------------------------------------------------------------------------------------------------------------------"std::endl;
+    std::cout<<"Using camera left camera intrinsics "<< left_intrinsics<<std::endl;
+    std::cout<<"Using camera left camera distorsion "<< left_distorsion<<std::endl;
+    std::cout<<" -----------------------------------------------------------------------------------------------------------------------"std::endl;
+     std::cout<<" -----------------------------------------------------------------------------------------------------------------------"std::endl;
+    std::cout<<"Using camera right camera parameters "<< right_intrinsics<<std::endl;
+    std::cout<<"Using camera right camera distorsion "<< right_distorsion<<std::endl;
+     std::cout<<" -----------------------------------------------------------------------------------------------------------------------"std::endl;
+    std::cout<<" -----------------------------------------------------------------------------------------------------------------------"std::endl;
     //----------------------------Loaded files ------------------------//
     for(int i =0; i<nbr_test; i++)
     {
