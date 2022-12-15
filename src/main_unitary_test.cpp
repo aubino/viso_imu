@@ -62,13 +62,13 @@ int main(int argc , char** argv)
     if(nbr_test>left_images_vector.size() || nbr_test>right_images_vector.size())
     {
         std::cout<<"Number of test cases superior to datas provided. Will try to take all the datas instead"<<std::endl;
-        nbr_test= std::min(left_images_vector.size(),right_images_vector.size())
+        nbr_test= std::min(left_images_vector.size(),right_images_vector.size());
     }
 
     for(int i =0; i<nbr_test; i++)
     {
-        std::string left_image_path = cv::samples::findFile(left_image_vector[i]);
-        std::string right_image_path = cv::samples::findFile(right_image_vector[i]);
+        std::string left_image_path = cv::samples::findFile(left_images_vector[i]);
+        std::string right_image_path = cv::samples::findFile(right_images_vector[i]);
         cv::Mat left_img = cv::imread(left_image_path, cv::IMREAD_COLOR);
         cv::Mat right_img = cv::imread(right_image_path, cv::IMREAD_COLOR);
         if(left_img.empty())
@@ -83,7 +83,15 @@ int main(int argc , char** argv)
         }
         cv::imshow("Left Image DIsplay", left_img);
         cv::imshow("Right Image DIsplay", right_img);
-        int k = waitKey(0);
+        cv::Mat R, t, pts,E;
+        //pts = compute_transform_essential(left_img,right_img,intrinsics,R,t,E);
+        std::pair<std::vector<cv::KeyPoint>,cv::Mat> left_kp =  find_key_points_and_descriptors(left_img ,300,"left_kp");
+        std::pair<std::vector<cv::KeyPoint>,cv::Mat> right_kp =  find_key_points_and_descriptors(right_img ,300,"right_kp");
+        
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> matches =  match_images(left_img, right_img,300,0.15,"Match_window","BruteForce-Hamming");
+        
+        int k = cv::waitKey(0);
         if(k =='q')
             return 0 ;
 
