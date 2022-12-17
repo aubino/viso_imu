@@ -172,9 +172,8 @@ void viso_thread(std::string config_file)
         //An then we compute the essential matrix
         cv::imshow("image_1",img1.image);
         cv::imshow("image_2",img2.image);
-        /*
         cv::Mat R, t, pts,E;
-        pts = compute_transform_essential(img2.image,img1.image,intrinsics,R,t,E);*/
+        pts = compute_transform_essential(img2.image,img1.image,intrinsics,R,t,E);
         int keycode = cv::waitKey(10) & 0xff ; 
         if (keycode == 27) break ;
 
