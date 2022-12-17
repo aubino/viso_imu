@@ -119,8 +119,8 @@ void viso_thread(std::string csi_pipeline, std::string config_file)
     cv::Mat intrinsics, distorsion; 
     if(fs.isOpened ())
     {
-        fs["cameraMatrix"]>>intrinsics;
-        fs["distCoeffs"]>>distorsion;
+        fs["camera_matrix"]>>intrinsics;
+        fs["distortion_coefficients"]>>distorsion;
         std::cout<<"Using Camra paramaters :"<<std::endl;
         std::cout<<"\t Intrinsics : "<<intrinsics<<std::endl;
         std::cout<<"\t Distorsion : "<<distorsion<<std::endl; 
