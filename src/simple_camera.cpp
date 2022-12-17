@@ -47,7 +47,7 @@ int main()
     	if (!cap.read(img)) {
 		std::cout<<"Capture read error"<<std::endl;
 		break;
-	}
+	    }
 	
 	cv::imshow("CSI Camera",img);
 	int keycode = cv::waitKey(10) & 0xff ; 
