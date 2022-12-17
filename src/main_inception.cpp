@@ -121,6 +121,8 @@ void viso_thread(std::string config_file)
         fs["distortion_coefficients"]>>distorsion;
         fs["image_width"]>>capture_width;
         fs["image_height"]>>capture_height;
+        display_height = capture_height;
+        display_width = capture_width;
         std::cout<<"Using Camra paramaters :"<<std::endl;
         std::cout<<"\t Intrinsics : "<<intrinsics<<std::endl;
         std::cout<<"\t Distorsion : "<<distorsion<<std::endl;

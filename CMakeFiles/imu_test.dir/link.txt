@@ -1,1 +1,0 @@
-/usr/bin/c++   -pthread   CMakeFiles/imu_test.dir/src/ICM20948.cpp.o CMakeFiles/imu_test.dir/src/main.cpp.o  -o imu_test 
