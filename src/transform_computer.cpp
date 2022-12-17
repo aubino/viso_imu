@@ -2,7 +2,9 @@
 
 cv::Mat compute_transform_essential(const cv::Mat& img1, const cv::Mat& img2,cv::Mat cameraMatrix,cv::Mat& R, cv::Mat& t, cv::Mat& Essential)
 {
-    auto points_pairs = match_images(img1,img2,300,0.5f);
+    auto points_pairs = filter_matches_with_disp(match_images(img1,img2,300,0.5f),cameraMatrix,5.0);
+    //auto points_pairs = match_images(img1,img2,300,0.5f);
+
     if (points_pairs.first.size()<=7)
     {
         #ifdef DEBUG 

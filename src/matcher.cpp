@@ -47,3 +47,25 @@ std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> match_images(const 
         return result;
     }
 #endif
+
+std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> filter_matches_with_disp(std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> matches,cv::Mat intrinsics,double minimum_dist)
+{
+    std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> result;
+    for(int i = 0; i< std::min(matches.first.size(),matches.second.size());i++)
+    {
+        if(pixel_distance(matches.first[i],matches.second[i])>=minimum_dist)
+            {
+                result.first.push_back(matches.first[i]) ;
+                result.second.push_back(matches.second[i]);
+            }
+    }
+    #ifdef DEBUG 
+        std::cout<<"Filter found "<<result.first.size()<<" matches with a minimum pixelic disparity of "<<minimum_dist<<std::endl;
+    #endif
+    return result;
+} 
+
+double pixel_distance(cv::Point2f P1, cv::Point2f P2)
+{
+    return  cv::norm(P1-P2);//std::sqrt((P1.x-P2.x)*(P1.x-P2.x)+(P1.y-P2.y)*(P1.y-P2.y)) ; 
+}
