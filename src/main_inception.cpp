@@ -179,10 +179,11 @@ int main(int argc , char** argv)
         config_file = argv[1];
     }
     signal(SIGINT, signal_callback_handler); //to catch the sigterm if needed;
-    std::thread t1(viso_thread,pipeline,config_file);
-    std::thread t2(imu_tread,0.01);
-    t1.join();
-    t2.join(); 
+    //std::thread t1(viso_thread,pipeline,config_file);
+    //std::thread t2(imu_tread,0.01);
+    //t1.join();
+    //t2.join();
+    viso_thread(pipeline,config_file); 
     return 1;
 
 }
