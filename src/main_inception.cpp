@@ -121,6 +121,9 @@ void viso_thread(std::string csi_pipeline, std::string config_file)
     {
         fs["cameraMatrix"]>>intrinsics;
         fs["distCoeffs"]>>distorsion;
+        std::cout<<"Using Camra paramaters :"<<std::endl;
+        std::cout<<"\t Intrinsics : "<<intrinsics<<std::endl;
+        std::cout<<"\t Distorsion : "<<distorsion<<std::endl; 
     }
     else
     {
@@ -130,6 +133,7 @@ void viso_thread(std::string csi_pipeline, std::string config_file)
         
     while(!sigterm)
     {
+        std::cout<<"Viso thread entered infinite loop routine "<<std::endl;
         ImageStamped img1;
         ImageStamped img2;
         if (!cap.read(img1.image)) {
