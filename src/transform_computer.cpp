@@ -2,7 +2,7 @@
 
 cv::Mat compute_transform_essential(const cv::Mat& img1, const cv::Mat& img2,cv::Mat cameraMatrix,cv::Mat& R, cv::Mat& t, cv::Mat& Essential)
 {
-    auto points_pairs = match_images(img1,img2,300,0.3f);
+    auto points_pairs = match_images(img1,img2,300,0.5f);
     if (points_pairs.first.size()<=7)
     {
         #ifdef DEBUG 
@@ -18,7 +18,8 @@ cv::Mat compute_transform_essential(const cv::Mat& img1, const cv::Mat& img2,cv:
         cv::Mat mask;
         Essential =  cv::findEssentialMat(points_pairs.first, points_pairs.second,cameraMatrix,cv::RANSAC,0.999, 1,mask);
         cv::Mat points;
-        cv::recoverPose(Essential,points_pairs.first,points_pairs.second,cameraMatrix,R,t,InfThresh, cv::noArray(),points);
+        cv::Mat inliers;
+        cv::recoverPose(Essential,points_pairs.first,points_pairs.second,cameraMatrix,R,t,InfThresh, inliers,points);
         return points;
     }
 }
