@@ -168,13 +168,30 @@ void viso_thread(std::string config_file)
         img1.image = dis_buff;
         cv::undistort(img2.image,dis_buff,intrinsics,distorsion);
         img2.image = dis_buff;
-        #ifdef DEBUG
-            std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> matches =  match_images(img2.image, img2.image,300,0.15,"Match_window","BruteForce-Hamming");
-        #endif
+        
         //An then we compute the essential matrix
         cv::imshow("image_1",img1.image);
         cv::imshow("image_2",img2.image);
-        cv::Mat R, t, pts,E;
+        cv::Mat R, t,pts,E;
+        while(!compute_transform(img2.image,img1.image,intrinsics,R,t,E) && !sigterm)
+        {
+            std::cout<<"Not enough disparity for transform computation. Waiting for appropriate second image ...."<<std::endl;
+            if (!cap.read(img2.image)) 
+            {//retake second image if there is not enough disparity
+		        std::cout<<"Capture read error"<<std::endl;
+                sigterm = true;
+		        break;
+	        }
+            else 
+            {
+                img2.t= time(NULL);
+                cv::undistort(img2.image,dis_buff,intrinsics,distorsion);
+                img2.image = dis_buff;
+            }
+        }
+        #ifdef DEBUG
+            std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> matches =  match_images(img2.image, img2.image,300,0.15,"Match_window","BruteForce-Hamming");
+        #endif
         pts = compute_transform_essential(img2.image,img1.image,intrinsics,R,t,E);
         std::cout<<" Rendering results"<<std::endl;
         std::cout<<"Translation direction :  \t "<<t<<std::endl;
