@@ -184,9 +184,10 @@ void viso_thread(std::string config_file)
 	        }
             else 
             {
+                cv::Mat other_buff;
                 img2.t= time(NULL);
-                cv::undistort(img2.image,dis_buff,intrinsics,distorsion);
-                img2.image = dis_buff;
+                cv::undistort(img2.image,other_buff,intrinsics,distorsion);
+                img2.image = other_buff;
             }
         }
         #ifdef DEBUG
