@@ -140,10 +140,13 @@ void viso_thread(std::string csi_pipeline, std::string config_file)
 		std::cout<<"Capture read error"<<std::endl;
 		break;
 	    }
-        cap.read(img1.image);
-        img1.t= time(NULL);
-        cap.read(img2.image);
-        img2.t= time(NULL);
+        else img1.t= time(NULL);
+        if (!cap.read(img2.image)) {
+		std::cout<<"Capture read error"<<std::endl;
+		break;
+	    }
+        else img2.t= time(NULL);
+        
         //Now undistord the image ; 
         cv::Mat dis_buff; 
         cv::undistort(img1.image,dis_buff,intrinsics,distorsion);
