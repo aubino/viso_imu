@@ -76,24 +76,28 @@ int main(int argc , char** argv)
             left_projection(rows, cols, cv::DataType<double>::type),
             right_intrinsics(rows, cols, cv::DataType<double>::type),
             right_distorsion(rows, cols, cv::DataType<double>::type), 
-            right_projection(rows, cols, cv::DataType<double>::type);
+            right_projection(rows, cols, cv::DataType<double>::type),
+            stereo_trans(rows,cols,cv::DataType<double>::type), // translation matrix from left to right camera 
+            stereo_rot(rows,cols,cv::DataType<double>::type); // rotation matrix from left to right camera
     if(fs.isOpened ())
     {
         fs["K_101"]>>left_intrinsics;
         fs["D_101"]>>left_distorsion;
         fs["K_103"] >> right_intrinsics;
         fs["D_103"]>>right_distorsion;
+        fs["R_103"]>>stereo_rot;
+        fs["T_103"]>>stereo_trans;
     }
-     std::cout<<" -----------------------------------------------------------------------------------------------------------------------"std::endl;
-      std::cout<<" -----------------------------------------------------------------------------------------------------------------------"std::endl;
-    std::cout<<"Using camera left camera intrinsics "<< left_intrinsics<<std::endl;
-    std::cout<<"Using camera left camera distorsion "<< left_distorsion<<std::endl;
-    std::cout<<" -----------------------------------------------------------------------------------------------------------------------"std::endl;
-     std::cout<<" -----------------------------------------------------------------------------------------------------------------------"std::endl;
-    std::cout<<"Using camera right camera parameters "<< right_intrinsics<<std::endl;
-    std::cout<<"Using camera right camera distorsion "<< right_distorsion<<std::endl;
-     std::cout<<" -----------------------------------------------------------------------------------------------------------------------"std::endl;
-    std::cout<<" -----------------------------------------------------------------------------------------------------------------------"std::endl;
+     std::cout<<" -----------------------------------------------------------------------------------------------------------------------"<<std::endl;
+      std::cout<<" -----------------------------------------------------------------------------------------------------------------------"<<std::endl;
+    std::cout<<"Using camera left camera intrinsics :"<<std::endl<< left_intrinsics<<std::endl;
+    std::cout<<"Using camera left camera distorsion :"<< std::endl<< left_distorsion<<std::endl;
+    std::cout<<" -----------------------------------------------------------------------------------------------------------------------"<<std::endl;
+     std::cout<<" -----------------------------------------------------------------------------------------------------------------------"<<std::endl;
+    std::cout<<"Using camera right camera parameters :"<<std::endl<< right_intrinsics<<std::endl;
+    std::cout<<"Using camera right camera distorsion :"<<std::endl<< right_distorsion<<std::endl;
+     std::cout<<" -----------------------------------------------------------------------------------------------------------------------"<<std::endl;
+    std::cout<<" -----------------------------------------------------------------------------------------------------------------------"<<std::endl;
     //----------------------------Loaded files ------------------------//
     for(int i =0; i<nbr_test; i++)
     {
@@ -101,6 +105,7 @@ int main(int argc , char** argv)
         std::string right_image_path = cv::samples::findFile(right_images_vector[i]);
         cv::Mat left_img = cv::imread(left_image_path, cv::IMREAD_COLOR);
         cv::Mat right_img = cv::imread(right_image_path, cv::IMREAD_COLOR);
+        cv::Mat left_img_undistord ,right_img_undistord;
         if(left_img.empty())
         {
             std::cout<<"Could not load the image "<<left_image_path<<std::endl;
@@ -114,13 +119,37 @@ int main(int argc , char** argv)
         cv::imshow("Left Image DIsplay", left_img);
         cv::imshow("Right Image DIsplay", right_img);
         cv::Mat R, t, pts,E;
-        //pts = compute_transform_essential(left_img,right_img,intrinsics,R,t,E);
-        std::pair<std::vector<cv::KeyPoint>,cv::Mat> left_kp =  find_key_points_and_descriptors(left_img ,300,"left_kp");
-        std::pair<std::vector<cv::KeyPoint>,cv::Mat> right_kp =  find_key_points_and_descriptors(right_img ,300,"right_kp");
-        
+        cv::undistort(left_img,left_img_undistord,left_intrinsics,left_distorsion);
+        cv::undistort(right_img,right_img_undistord,right_intrinsics,right_distorsion);
+        std::pair<std::vector<cv::KeyPoint>,cv::Mat> left_kp =  find_key_points_and_descriptors(left_img_undistord ,300,"left_kp");
+        std::pair<std::vector<cv::KeyPoint>,cv::Mat> right_kp =  find_key_points_and_descriptors(right_img_undistord ,300,"right_kp");
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> matches =  match_images(left_img, right_img,300,0.15,"Match_window","BruteForce-Hamming");
-        
+        std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> matches =  match_images(left_img_undistord, right_img_undistord,300,0.15,"Match_window","BruteForce-Hamming");
+        //cv::Mat mask;
+        //cv::Mat E =  cv::findEssentialMat(matches.first, matches.second,right_intrinsics,cv::RANSAC,0.999, 3,mask);
+        //std::cout<<"Essential is "<<std::endl<<E<<std::endl;
+        pts = compute_transform_essential(left_img_undistord,right_img_undistord,right_intrinsics,R,t,E);
+        std::cout<< "Translation vector is "<<std::endl<<t<<std::endl;
+        std::cout<<"Rotation matrix is "<<std::endl<<R<<std::endl;
+        Eigen::Vector3d Translation; 
+        Translation<< t.at<double>(0,0),t.at<double>(1,0),t.at<double>(3,0); 
+        Eigen::Vector3d StereoTranslation; 
+        StereoTranslation<< stereo_trans.at<double>(0,0),stereo_trans.at<double>(1,0),stereo_trans.at<double>(3,0);
+        StereoTranslation = (1/StereoTranslation.norm())*StereoTranslation;
+        Eigen::Matrix3d Rotation; 
+        Rotation<< R.at<double>(0,0),R.at<double>(0,1), R.at<double>(0,2),
+                                    R.at<double>(1,0),R.at<double>(1,1),R.at<double>(1,2),
+                                    R.at<double>(2,0),R.at<double>(2,1),R.at<double>(2,2);
+        Eigen::Matrix3d StereoRotation; 
+        StereoRotation<< stereo_rot.at<double>(0,0),stereo_rot.at<double>(0,1), stereo_rot.at<double>(0,2),
+                                    stereo_rot.at<double>(1,0),stereo_rot.at<double>(1,1),stereo_rot.at<double>(1,2),
+                                    stereo_rot.at<double>(2,0),stereo_rot.at<double>(2,1),stereo_rot.at<double>(2,2);
+        if(!Translation.norm())
+            Translation=(1/Translation.norm())*Translation;
+        std::cout<<"The direction error after reconstrunction is "<< (Translation.cross(StereoTranslation)).norm()<<" "<<std::endl;
+        auto rotation_err = -Rotation.eulerAngles(0, 1, 2)+StereoRotation.eulerAngles(0,1,2);
+        std::cout<<"Rotation matrix error in angles [Unit = degees] "<< rotation_err[0]*180/PI<<" on X axis ,"<< rotation_err[1]*180/PI<<" on Y axis ,"
+                    << rotation_err[2]*180/PI<<" on Z axis "<<std::endl; 
         int k = cv::waitKey(0);
         if(k =='q')
             return 0 ;
