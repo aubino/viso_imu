@@ -111,9 +111,8 @@ void imu_tread(double period)
     }
 }
 
-void viso_thread(std::string csi_pipeline, std::string config_file)
+void viso_thread(std::string config_file)
 {   
-    cv::VideoCapture cap(csi_pipeline, cv::CAP_GSTREAMER);
     cv::FileStorage fs(config_file,cv::FileStorage::READ);
     cv::Mat intrinsics, distorsion; 
     if(fs.isOpened ())
@@ -134,7 +133,15 @@ void viso_thread(std::string csi_pipeline, std::string config_file)
     {
         std::cout<<"Could not find any camera config file with the name  "<< config_file << std::endl;
         sigterm = true; //Exiting the infinite loop directly
-    } 
+    }
+    std::string pipeline = gstreamer_pipeline(capture_width,
+    capture_height,
+	display_width,
+	display_height,
+	framerate,
+	flip_method);
+    std::cout << "Using pipeline: \n\t" << pipeline << "\n";
+    cv::VideoCapture cap(pipeline, cv::CAP_GSTREAMER); 
         
     while(!sigterm)
     {
@@ -171,13 +178,6 @@ void viso_thread(std::string csi_pipeline, std::string config_file)
 
 int main(int argc , char** argv)
 {
-    std::string pipeline = gstreamer_pipeline(capture_width,
-    capture_height,
-	display_width,
-	display_height,
-	framerate,
-	flip_method);
-    std::cout << "Using pipeline: \n\t" << pipeline << "\n";
     // Arguments list( in order) -config file for camera calib -others
     std::string config_file;
     std::cout<<"The number of arguments is "<<argc<<std::endl;
@@ -191,7 +191,7 @@ int main(int argc , char** argv)
     //std::thread t2(imu_tread,0.01);
     //t1.join();
     //t2.join();
-    viso_thread(pipeline,config_file); 
+    viso_thread(config_file); 
     return 1;
 
 }
