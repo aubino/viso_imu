@@ -35,6 +35,7 @@ include_directories( include
 add_executable(viso_imu src/detector.cpp src/ICM20948.cpp src/imu.cpp src/main_inception.cpp src/matcher.cpp src/transform_computer.cpp)
 add_executable(viso_imu_test src/detector.cpp src/ICM20948.cpp src/imu.cpp src/main_unitary_test.cpp src/matcher.cpp src/transform_computer.cpp)
 add_executable(imu_test src/ICM20948.cpp src/main.cpp)
+add_executable(simple_camera src/simple_camera.cpp)
 
 target_link_libraries(viso_imu 
 ${OpenCV_LIBRARIES}
@@ -44,3 +45,8 @@ target_link_libraries(viso_imu_test
 ${OpenCV_LIBRARIES}
 ${EIGEN3_LIBRARIES}
 ${Boost_LIBRARIES})
+
+target_link_libraries(simple_camera 
+${OpenCV_LIBRARIES})
+
+
