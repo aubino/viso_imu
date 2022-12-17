@@ -168,12 +168,12 @@ void viso_thread(std::string config_file)
         img1.image = dis_buff;
         cv::undistort(img2.image,dis_buff,intrinsics,distorsion);
         img2.image = dis_buff;
-        //std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> matches =  match_images(img2.image, img2.image,300,0.15,"Match_window","BruteForce-Hamming");
+        std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> matches =  match_images(img2.image, img2.image,300,0.15,"Match_window","BruteForce-Hamming");
         //An then we compute the essential matrix
         cv::imshow("image_1",img1.image);
         cv::imshow("image_2",img2.image);
         cv::Mat R, t, pts,E;
-        pts = compute_transform_essential(img2.image,img1.image,intrinsics,R,t,E);
+        //pts = compute_transform_essential(img2.image,img1.image,intrinsics,R,t,E);
         int keycode = cv::waitKey(10) & 0xff ; 
         if (keycode == 27) break ;
 
