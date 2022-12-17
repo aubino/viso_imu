@@ -16,13 +16,12 @@ std::string gstreamer_pipeline (int capture_width, int capture_height, int displ
            "/1 ! nvvidconv flip-method=" + std::to_string(flip_method) + " ! video/x-raw, width=(int)" + std::to_string(display_width) + ", height=(int)" +
            std::to_string(display_height) + ", format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink";
 }
-
 int capture_width = 1280 ;
 int capture_height = 720 ;
 int display_width = 1280 ;
 int display_height = 720 ;
-int framerate = 30 ;
-int flip_method = 0 ;
+int framerate = 10 ;
+int flip_method = 0 ; 
 
 
 
@@ -121,9 +120,15 @@ void viso_thread(std::string csi_pipeline, std::string config_file)
     {
         fs["camera_matrix"]>>intrinsics;
         fs["distortion_coefficients"]>>distorsion;
+        fs["image_width"]>>capture_width;
+        fs["image_height"]>>capture_height;
         std::cout<<"Using Camra paramaters :"<<std::endl;
         std::cout<<"\t Intrinsics : "<<intrinsics<<std::endl;
-        std::cout<<"\t Distorsion : "<<distorsion<<std::endl; 
+        std::cout<<"\t Distorsion : "<<distorsion<<std::endl;
+        std::cout<<"\t Image width : "<<capture_width<<std::endl;
+        std::cout<<"\t Image Height : "<<capture_height<<std::endl;
+        
+        
     }
     else
     {
@@ -146,7 +151,7 @@ void viso_thread(std::string csi_pipeline, std::string config_file)
 		break;
 	    }
         else img2.t= time(NULL);
-        
+
         //Now undistord the image ; 
         cv::Mat dis_buff; 
         cv::undistort(img1.image,dis_buff,intrinsics,distorsion);
