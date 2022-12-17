@@ -175,7 +175,6 @@ void viso_thread(std::string config_file)
         while(!compute_transform(img2.image,img1.image,intrinsics,R,t,E) && !sigterm)
         {
             std::cout<<"Not enough disparity for transform computation. Waiting for appropriate second image ...."<<std::endl;
-            int keycode = cv::waitKey(10) ;
             if (!cap.read(img2.image)) 
             {//retake second image if there is not enough disparity
 		        std::cout<<"Capture read error"<<std::endl;
