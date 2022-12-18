@@ -143,7 +143,9 @@ void viso_thread(std::string config_file)
 	framerate,
 	flip_method);
     std::cout << "Using pipeline: \n\t" << pipeline << "\n";
-    cv::VideoCapture cap(pipeline, cv::CAP_GSTREAMER); 
+    cv::VideoCapture cap(pipeline, cv::CAP_GSTREAMER);
+    std::cout<<"Waiting for 5 s"<<std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(50000)); 
         
     while(!sigterm)
     {
