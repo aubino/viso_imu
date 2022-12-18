@@ -103,6 +103,7 @@ void imu_tread(double period)
                 imu_stack.absolute_queue.push_front(measurediff);
                 imu_stack_mutex.unlock();
                 int slp_for = period*1000;
+                std::cout<<"Transform from time to time is "<< difftrans<<std::endl;
                 std::this_thread::sleep_for (std::chrono::milliseconds(slp_for));
             }
             
