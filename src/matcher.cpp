@@ -21,6 +21,7 @@ std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> match_images(const 
     result.first= points1; 
     result.second= points2; 
     }
+    std::cout<<"Could not find any key point"<<std::endl; 
   return result;
 }
 
@@ -50,6 +51,7 @@ std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> match_images(const 
             cv::drawMatches(img1,kp_des1.first,img2,kp_des2.first,matches,img_match_drawn,100);
             cv::imshow(debug_window,img_match_drawn); 
         }
+        std::cout<<"Could not find any key point"<<std::endl; 
         return result;
     }
 #endif
