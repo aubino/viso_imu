@@ -168,11 +168,8 @@ void viso_thread(std::string config_file)
         img1.image = dis_buff;
         cv::undistort(img2.image,dis_buff,intrinsics,distorsion);
         img2.image = dis_buff;
-        
-        cv::imshow("image_1",img1.image);
-        cv::imshow("image_2",img2.image);
         cv::Mat R, t,pts,E;
-        while(!compute_transform(img2.image,img1.image,intrinsics,R,t,E) && !sigterm)
+        while(!compute_transform(img2.image,img1.image,intrinsics,R,t,E))
         {
             std::cout<<"Not enough disparity for transform computation. Waiting for appropriate second image ...."<<std::endl;
             //std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -188,6 +185,8 @@ void viso_thread(std::string config_file)
                 img2.t= time(NULL);
                 cv::undistort(img2.image,other_buff,intrinsics,distorsion);
                 img2.image = other_buff;
+                cv::imshow("image_1",img1.image);
+                cv::imshow("image_2",img2.image);
                 int keycode = cv::waitKey(10) ;
                 if (keycode == 'q') break ;
             }
@@ -200,6 +199,8 @@ void viso_thread(std::string config_file)
         std::cout<<"Translation direction :  \t "<<t<<std::endl;
         std::cout<<"Rotation estimate : \t "<<R<<std::endl;
         std::cout<<"Considered inliers 3D coordinates : \t"<<pts<<std::endl;
+        cv::imshow("image_1",img1.image);
+        cv::imshow("image_2",img2.image);
         int keycode = cv::waitKey(10) ; 
         if (keycode == 'q') break ;
 
