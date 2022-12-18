@@ -234,7 +234,8 @@ int main(int argc , char** argv)
     //std::thread t2(imu_tread,0.01);
     //t1.join();
     //t2.join();
-    viso_thread(config_file); 
+    //viso_thread(config_file); 
+    imu_tread(0.01);
     return 1;
 
 }
