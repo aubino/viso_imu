@@ -144,9 +144,7 @@ void viso_thread(std::string config_file)
 	flip_method);
     std::cout << "Using pipeline: \n\t" << pipeline << "\n";
     cv::VideoCapture cap(pipeline, cv::CAP_GSTREAMER);
-    std::cout<<"Waiting for 5 s"<<std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(50000)); 
-        
+    std::cout<<"Waiting for 5 s"<<std::endl;        
     while(!sigterm)
     {
         std::cout<<"Viso thread entered infinite loop routine "<<std::endl;
@@ -171,12 +169,13 @@ void viso_thread(std::string config_file)
         cv::undistort(img2.image,dis_buff,intrinsics,distorsion);
         img2.image = dis_buff;
         cv::Mat R, t,pts,E;
+        int recap_attempts = 0;
         while(!compute_transform(img2.image,img1.image,intrinsics,R,t,E))
         {
             std::cout<<"Not enough disparity for transform computation. Waiting for appropriate second image ...."<<std::endl;
             //std::this_thread::sleep_for(std::chrono::milliseconds(10));
             if (!cap.read(img2.image)) 
-            {//retake second image if there is not enough disparity
+            {//retake second image if there is not enough disparity repeat the process for 200 atempts and switch image2 to the img1 
 		        std::cout<<"Capture read error"<<std::endl;
                 sigterm = true;
 		        break;
@@ -189,9 +188,17 @@ void viso_thread(std::string config_file)
                 img2.image = other_buff;
                 cv::imshow("image_1",img1.image);
                 cv::imshow("image_2",img2.image);
+                recap_attempts++;
                 int keycode = cv::waitKey(10) ;
                 if (keycode == 'q') break ;
+                
             }
+            if(recap_attempts == 199) 
+            {
+                recap_attempts =0;
+                img1.image = img2.image;
+            }
+
         }
         #ifdef DEBUG
             std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> matches =  match_images(img2.image, img2.image,300,0.15,"Match_window","BruteForce-Hamming");
