@@ -66,7 +66,7 @@ void imu_tread(double period)
         initial_ypr[0]+= stAngles.fRoll*PI/180;
         initial_ypr[1]+=stAngles.fPitch*PI/180;
         initial_ypr[2]+=stAngles.fYaw*PI/180;
-        std::cout<<"..";
+        std::cout<<".."<<std::endl;
         std::this_thread::sleep_for (std::chrono::milliseconds(10));
     }
     std::cout<<std::endl;
