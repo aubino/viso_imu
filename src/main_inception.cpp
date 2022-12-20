@@ -57,7 +57,7 @@ void imu_tread(double period)
     std::cout<<"Initiating the IMU calibration sequence. Please make no movement "<<std::endl;
     double initial_accel[3] ={0,0,0};
     double initial_ypr[3] = {0,0,0};
-    for(int i=0; i<10; i++)
+    for(int i=0; i<100; i++)
     {
         imuDataGet( &stAngles, &stGyroRawData, &stAccelRawData, &stMagnRawData);
         initial_accel[0]+=stAccelRawData.fX*G;
@@ -70,12 +70,12 @@ void imu_tread(double period)
         std::this_thread::sleep_for (std::chrono::milliseconds(100));
     }
     std::cout<<std::endl;
-    initial_accel[0]= initial_accel[0]/10;
-    initial_accel[1]= initial_accel[1]/10;
-    initial_accel[2]= initial_accel[2]/10;
-    initial_ypr[0] = initial_ypr[0]/10;
-    initial_ypr[1] = initial_ypr[1] /10;
-    initial_ypr[2] = initial_ypr[2]/10;
+    initial_accel[0]= initial_accel[0]/100;
+    initial_accel[1]= initial_accel[1]/100;
+    initial_accel[2]= initial_accel[2]/100;
+    initial_ypr[0] = initial_ypr[0]/100;
+    initial_ypr[1] = initial_ypr[1] /100;
+    initial_ypr[2] = initial_ypr[2]/100;
     //register the zero motion data as gravity
     imu_stack.gravity0<< initial_accel[0],initial_accel[1],initial_accel[2];
     imu_stack.OriginTransform = Eigen::Translation<double,3>(0,0,0)*Eigen::AngleAxisd(initial_ypr[0], Eigen::Vector3d::UnitX())
