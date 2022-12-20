@@ -89,6 +89,7 @@ void imu_tread(double period)
     {
         imuDataGet( &stAngles, &stGyroRawData, &stAccelRawData, &stMagnRawData);
         time_t t = time(NULL);
+        std::cout<<" Raw aceleration Data "<<stAccelRawData.fX<<" "<<stAccelRawData.fY<<" "<<stAccelRawData.fZ<<std::endl;
         if(imu_stack_mutex.try_lock())
         {
             if(imu_stack.absolute_queue.size()==0)
