@@ -66,8 +66,10 @@ void imu_tread(double period)
         initial_ypr[0]+= stAngles.fRoll*PI/180;
         initial_ypr[1]+=stAngles.fPitch*PI/180;
         initial_ypr[2]+=stAngles.fYaw*PI/180;
-        std::this_thread::sleep_for (std::chrono::milliseconds(300));
+        std::cout<<"..";
+        std::this_thread::sleep_for (std::chrono::milliseconds(100));
     }
+    std::cout<<std::endl;
     initial_accel[0]= initial_accel[0]/10;
     initial_accel[1]= initial_accel[1]/10;
     initial_accel[2]= initial_accel[2]/10;
@@ -79,8 +81,8 @@ void imu_tread(double period)
     imu_stack.OriginTransform = Eigen::Translation<double,3>(0,0,0)*Eigen::AngleAxisd(initial_ypr[0], Eigen::Vector3d::UnitX())
         * Eigen::AngleAxisd(initial_ypr[1], Eigen::Vector3d::UnitY())
         * Eigen::AngleAxisd(initial_ypr[2], Eigen::Vector3d::UnitZ());
-    std::cout<<" End of calibration . \n Estimated value of G at time zero is " << imu_stack.gravity0<<std::endl;
-    std::cout<<"Transform at Time 0 is"<<imu_stack.OriginTransform.linear()<<std::endl;
+    std::cout<<" End of calibration . \n Estimated value of G at time zero is : \n " << imu_stack.gravity0<<std::endl;
+    std::cout<<"Transform at Time 0 is : \n "<<imu_stack.OriginTransform.linear()<<std::endl;
     //End of seting up imu sdk
     imu_stack.sampling_period = period; 
     while(!sigterm)
