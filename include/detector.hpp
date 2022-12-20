@@ -4,7 +4,7 @@
 #include <vector>
 #include <iostream>
 #pragma once 
-#define DEBUG 1
+//#define DEBUG 1
 
 std::pair<std::vector<cv::KeyPoint>,cv::Mat> find_key_points_and_descriptors(const cv::Mat& ,const int); 
 #ifdef DEBUG 
