@@ -54,6 +54,33 @@ void imu_tread(double period)
 	{
 		printf("Motion sersor NULL\n");
 	}
+    std::cout<<"Initiating the IMU calibration sequence. Please make no movement "<<std::endl;
+    double initial_accel[3] ={0,0,0};
+    double initial_ypr[3] = {0,0,0};
+    for(int i=0; i<10; i++)
+    {
+        imuDataGet( &stAngles, &stGyroRawData, &stAccelRawData, &stMagnRawData);
+        initial_accel[0]+=stAccelRawData.fX*G;
+        initial_accel[1]+=stAccelRawData.fY*G;
+        initial_accel[2]+=stAccelRawData.fZ*G;
+        initial_ypr[0]+= stAngles.fRoll*PI/180;
+        initial_ypr[1]+=stAngles.fPitch*PI/180;
+        initial_ypr[2]+=stAngles.fYaw*PI/180;
+        std::this_thread::sleep_for (std::chrono::milliseconds(300));
+    }
+    initial_accel[0]= initial_accel[0]/10;
+    initial_accel[1]= initial_accel[1]/10;
+    initial_accel[2]= initial_accel[2]/10;
+    initial_ypr[0] = initial_ypr[0]/10;
+    initial_ypr[1] = initial_ypr[1] /10;
+    initial_ypr[2] = initial_ypr[2]/10;
+    //register the zero motion data as gravity
+    imu_stack.gravity0<< initial_accel[0],initial_accel[1],initial_accel[2];
+    imu_stack.OriginTransform = Eigen::Translation<double,3>(0,0,0)*Eigen::AngleAxisd(initial_ypr[0], Eigen::Vector3d::UnitX())
+        * Eigen::AngleAxisd(initial_ypr[1], Eigen::Vector3d::UnitY())
+        * Eigen::AngleAxisd(initial_ypr[2], Eigen::Vector3d::UnitZ());
+    std::cout<<" End of calibration . \n Estimated value of G at time zero is " << imu_stack.gravity0<<std::endl;
+    std::cout<<"Transform at Time 0 is"<<imu_stack.OriginTransform.linear()<<std::endl;
     //End of seting up imu sdk
     imu_stack.sampling_period = period; 
     while(!sigterm)
@@ -66,6 +93,15 @@ void imu_tread(double period)
             { //first transfrom to stack. 
                 Imu measure("imuFrame");
                 measure.stamp_from= t;
+                //compute the new value of G.
+                Eigen::Vector3d gravity_t  = Eigen::AngleAxisd(stAngles.fRoll, Eigen::Vector3d::UnitX())
+                                            * Eigen::AngleAxisd(stAngles.fPitch, Eigen::Vector3d::UnitY())
+                                            * Eigen::AngleAxisd(stAngles.fYaw, Eigen::Vector3d::UnitZ()) 
+                                            * imu_stack.OriginTransform.linear().inverse() * imu_stack.gravity0;
+                //Now remove the gravity from measures
+                stAccelRawData.fX = stAccelRawData.fX - gravity_t[0]/G;
+                stAccelRawData.fY = stAccelRawData.fY - gravity_t[1]/G;
+                stAccelRawData.fZ = stAccelRawData.fZ - gravity_t[2]/G;
                 measure.Update_state(stAccelRawData.fX*G,
                     stAccelRawData.fY*G,
                     stAccelRawData.fZ*G,
@@ -73,7 +109,7 @@ void imu_tread(double period)
                     stGyroRawData.fY*PI/180,
                     stGyroRawData.fZ*PI/180,
                     stAngles.fRoll*PI/180,
-                    stAngles.fPitch*PI/180,
+                    stAngles.fPitch*PI/180, 
                     stAngles.fYaw*PI/180,time(NULL));
                 imu_stack.absolute_queue.push_front(measure);
                 imu_stack_mutex.unlock();

@@ -24,6 +24,7 @@ class Imu
     void Update_state(double ax,double ay,double az,double vyaw,double vpich,double vroll,double yaw,double pitch,double roll,time_t stamp);
     void Update_state(double ax,double ay,double az,double vyaw,double vpich,double vroll,Eigen::Quaternion<double> dq,time_t stamp);
     void setBias(double bias[15]);
+    void removeG();
     friend class ImuQueue;
     
 };
@@ -37,7 +38,9 @@ class ImuQueue
     void stack_absolute(Imu);
     void stack_absolute();
     void stack_relative(Imu);
-    void stack_relative(); 
+    void stack_relative();
+    Eigen::Vector3d gravity0;
+    Eigen::Transform<double,3,Eigen::Affine> OriginTransform;
     int queue_size;
     double sampling_period;
     ImuQueue(std::shared_ptr<Imu> imu,double T,int max_size=10000);
