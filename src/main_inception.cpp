@@ -66,7 +66,7 @@ void imu_tread(double period)
         initial_ypr[0]+= stAngles.fRoll*PI/180;
         initial_ypr[1]+=stAngles.fPitch*PI/180;
         initial_ypr[2]+=stAngles.fYaw*PI/180;
-        std::cout<<".."<<std::endl;
+        std::cout<<"..";
         std::this_thread::sleep_for (std::chrono::milliseconds(10));
     }
     std::cout<<std::endl;
@@ -211,6 +211,7 @@ void viso_thread(std::string config_file)
         cv::undistort(img2.image,dis_buff,intrinsics,distorsion);
         img2.image = dis_buff;
         cv::Mat R, t,pts,E;
+        Eigen::Transform<double,3,Eigen::Affine> imu_transform;
         int recap_attempts = 0;
         while(!compute_transform(img2.image,img1.image,intrinsics,R,t,E))
         {
@@ -246,15 +247,29 @@ void viso_thread(std::string config_file)
             std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> matches =  match_images(img2.image, img2.image,300,0.15,"Match_window","BruteForce-Hamming");
         #endif
         pts = compute_transform_essential(img2.image,img1.image,intrinsics,R,t,E);
+        #ifdef DEBUG
         std::cout<<" Rendering results"<<std::endl;
         std::cout<<"Translation direction :  \t "<<t<<std::endl;
         std::cout<<"Rotation estimate : \t "<<R<<std::endl;
         std::cout<<"Considered inliers 3D coordinates : \t"<<pts<<std::endl;
+        #endif
         cv::imshow("image_1",img1.image);
         cv::imshow("image_2",img2.image);
+
+        if(imu_stack_mutex.try_lock())
+        {
+            imu_transform = imu_stack.get_Transform(img2.t,img1.t);
+            Eigen::Vector3d Translation; 
+            Translation<< t.at<double>(0,0),t.at<double>(1,0),t.at<double>(3,0);
+            if(!Translation.norm())
+            {
+                std::cout<< "Translation is : " << (imu_transform.translation().norm()/Translation.norm())*Translation<<std::endl; 
+            } 
+            else 
+                std::cout<<"could not calculate trasnslation vector"<<std::endl; 
+        }
         int keycode = cv::waitKey(10) ; 
         if (keycode == 'q') break ;
-
     }
     cap.release();
     std::cout<<"Application recieved Sigterm"<<std::endl;
@@ -272,12 +287,12 @@ int main(int argc , char** argv)
         config_file = argv[1];
     }
     signal(SIGINT, signal_callback_handler); //to catch the sigterm if needed;
-    //std::thread t1(viso_thread,pipeline,config_file);
-    //std::thread t2(imu_tread,0.01);
-    //t1.join();
-    //t2.join();
+    std::thread t1(viso_thread,config_file);
+    std::thread t2(imu_tread,0.01);
+    t1.join();
+    t2.join();
     //viso_thread(config_file); 
-    imu_tread(0.01);
+    //imu_tread(0.01);
     return 1;
 
 }
