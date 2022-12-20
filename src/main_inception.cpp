@@ -267,6 +267,7 @@ void viso_thread(std::string config_file)
             } 
             else 
                 std::cout<<"could not calculate trasnslation vector"<<std::endl; 
+            imu_stack_mutex.unlock();
         }
         int keycode = cv::waitKey(10) ; 
         if (keycode == 'q') break ;
