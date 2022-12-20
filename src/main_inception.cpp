@@ -67,15 +67,15 @@ void imu_tread(double period)
         initial_ypr[1]+=stAngles.fPitch*PI/180;
         initial_ypr[2]+=stAngles.fYaw*PI/180;
         std::cout<<"..";
-        std::this_thread::sleep_for (std::chrono::milliseconds(100));
+        std::this_thread::sleep_for (std::chrono::milliseconds(10));
     }
     std::cout<<std::endl;
-    initial_accel[0]= initial_accel[0]/100;
-    initial_accel[1]= initial_accel[1]/100;
-    initial_accel[2]= initial_accel[2]/100;
-    initial_ypr[0] = initial_ypr[0]/100;
-    initial_ypr[1] = initial_ypr[1] /100;
-    initial_ypr[2] = initial_ypr[2]/100;
+    initial_accel[0]= initial_accel[0]/1000;
+    initial_accel[1]= initial_accel[1]/1000;
+    initial_accel[2]= initial_accel[2]/1000;
+    initial_ypr[0] = initial_ypr[0]/1000;
+    initial_ypr[1] = initial_ypr[1] /1000;
+    initial_ypr[2] = initial_ypr[2]/1000;
     //register the zero motion data as gravity
     imu_stack.gravity0<< initial_accel[0],initial_accel[1],initial_accel[2];
     imu_stack.OriginTransform = Eigen::Translation<double,3>(0,0,0)*Eigen::AngleAxisd(initial_ypr[0], Eigen::Vector3d::UnitX())
