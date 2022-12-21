@@ -121,10 +121,17 @@ int main(int argc , char** argv)
         cv::Mat R, t, pts,E;
         cv::undistort(left_img,left_img_undistord,left_intrinsics,left_distorsion);
         cv::undistort(right_img,right_img_undistord,right_intrinsics,right_distorsion);
-        std::pair<std::vector<cv::KeyPoint>,cv::Mat> left_kp =  find_key_points_and_descriptors(left_img_undistord ,300,"left_kp");
-        std::pair<std::vector<cv::KeyPoint>,cv::Mat> right_kp =  find_key_points_and_descriptors(right_img_undistord ,300,"right_kp");
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> matches =  match_images(left_img_undistord, right_img_undistord,300,0.15,"Match_window","BruteForce-Hamming");
+        #ifdef DEBUG
+            std::pair<std::vector<cv::KeyPoint>,cv::Mat> left_kp =  find_key_points_and_descriptors(left_img_undistord ,300,"left_kp");
+            std::pair<std::vector<cv::KeyPoint>,cv::Mat> right_kp =  find_key_points_and_descriptors(right_img_undistord ,300,"right_kp");
+            std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> matches =  match_images(left_img_undistord, right_img_undistord,300,0.15,"Match_window","BruteForce-Hamming");
+        #else 
+            std::pair<std::vector<cv::KeyPoint>,cv::Mat> left_kp =  find_key_points_and_descriptors(left_img_undistord ,300);
+            std::pair<std::vector<cv::KeyPoint>,cv::Mat> right_kp =  find_key_points_and_descriptors(right_img_undistord ,300);
+            std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> matches =  match_images(left_img_undistord, right_img_undistord,300,0.15,"BruteForce-Hamming"); 
+
+        #endif
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////   
         //cv::Mat mask;
         //cv::Mat E =  cv::findEssentialMat(matches.first, matches.second,right_intrinsics,cv::RANSAC,0.999, 3,mask);
         //std::cout<<"Essential is "<<std::endl<<E<<std::endl;
