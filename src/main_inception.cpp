@@ -6,6 +6,7 @@
 #include <thread>
 #include <mutex>
 #include <chrono>
+#include <algorithm>
 #define PI 3.14159265359
 #define G 9.81
 bool sigterm = 0;
@@ -35,6 +36,22 @@ void signal_callback_handler(int signum) {
 std::shared_ptr<Imu> imu_ptr; 
 ImuQueue imu_stack(imu_ptr,0.1,10000);
 std::mutex imu_stack_mutex;
+
+///////////////////////Argument parsing functions  ////////////////////////////////////////
+char* getCmdOption(char ** begin, char ** end, const std::string & option)
+{
+    char ** itr = std::find(begin, end, option);
+    if (itr != end && ++itr != end)
+    {
+        return *itr;
+    }
+    return 0;
+}
+
+bool cmdOptionExists(char** begin, char** end, const std::string& option)
+{
+    return std::find(begin, end, option) != end;
+}
 
 void imu_tread(double period)
 {
@@ -279,17 +296,29 @@ void viso_thread(std::string config_file)
 
 int main(int argc , char** argv)
 {
-    // Arguments list( in order) -config file for camera calib -others
-    std::string config_file;
+    // Arguments list 
+    // -c  : camera config file absolute path , default = /home/aubin/viso_imu/config/imx219.yml
+    // -p  : imu sampling period , default = 0.01
+    //
+    std::string config_file = "/home/aubin/viso_imu/config/imx219.yml";
+    double period = 0.01;
     std::cout<<"The number of arguments is "<<argc<<std::endl;
-    if(argc ==1) std::cout<<"Unspecified config file or any other argument"<<std::endl;
+    if(argc ==1) 
+    {
+        std::cout<<"Unspecified config file or any other argument"<<std::endl;
+        return 0;
+    }
     else
     {
-        config_file = argv[1];
+        if(cmdOptionExists(argv,argv+argc,"-c")) config_file = getCmdOption(argv,argv+argc,"-c");
+        //if(cmdOptionExists(argv,argv+argc,"--config_file")) config_file = getCmdOption(argv,argv+argc,"---config_file");
+        if(cmdOptionExists(argv,argv+argc,"-p")) period = std::stod(getCmdOption(argv,argv+argc,"-p"));
+        //if(cmdOptionExists(argv,argv+argc,"--period")) period = std::stod(getCmdOption(argv,argv+argc,"--period"));
     }
     signal(SIGINT, signal_callback_handler); //to catch the sigterm if needed;
+    std::cout<<"Arguments of the executable is config_file : "<< config_file<< " period "<<period<<std::endl;
     std::thread t1(viso_thread,config_file);
-    std::thread t2(imu_tread,0.01);
+    std::thread t2(imu_tread,period);
     t1.join();
     t2.join();
     //viso_thread(config_file); 
