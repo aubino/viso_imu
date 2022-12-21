@@ -33,6 +33,7 @@ std::vector<std::string> get_all(std::filesystem::path const & root, std::string
 
 int main(int argc , char** argv)
 {
+    //Arguments in order left images root, right images root,config file path,number of tests to perform.
     int rows = 3;
     int cols = 3;
     std::string right_root,left_root,config_file;
