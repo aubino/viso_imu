@@ -10,9 +10,7 @@
 
 
 ### Compilation instrunctions
-    First clone the repository : 
 `git clone https://github.com/aubino/viso_imu.git` 
-    Then compile the project  
 `mkdir build`
 `cd build`  
 `cmake ..`
