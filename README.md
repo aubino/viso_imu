@@ -23,7 +23,7 @@ Options
     -p  IMU data sampling period
 
 
-Executable  viso_imu_test *The testing executable. Uses known binocular (stereo) camera data to test the accuracy of the odometry*
+Executable  viso_imu_test *The testing executable. Uses known binocular (stereo) camera data to test the accuracy of the odometr*y  
 Arguments  (in order)  
         left_root  left images root *absolute directory* containing left images of a stereo camera 
         right_root  right imaes root *absolute directory* containing right images of a stereo camera
