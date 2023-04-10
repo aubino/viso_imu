@@ -28,4 +28,4 @@ jobs:
     - name: Make
       run: make .
     - name : Install 
-      run : make install 
+      run : sudo make install 
