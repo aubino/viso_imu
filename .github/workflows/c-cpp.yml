@@ -27,5 +27,6 @@ jobs:
       run: rm -rf build && mkdir build && cd build && cmake ..
     - name: Make
       run: make .
-    - name : Install 
-      run : sudo make install 
+    - name : Tests 
+      run : echo "Run some tests here ..."
+      
