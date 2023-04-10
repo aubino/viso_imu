@@ -26,4 +26,6 @@ jobs:
     - name: Pre - Build
       run: rm -rf build && mkdir build && cd build && cmake ..
     - name: Make
-      run: make 
+      run: make .
+    - name : Install 
+      run : make install 
