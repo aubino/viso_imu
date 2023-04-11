@@ -28,7 +28,7 @@ jobs:
     - name: Pre - Build
       run: cd $GITHUB_WORKSPACE/viso_imu/ && rm -rf build && mkdir build && cd build && cmake ..
     - name: Make
-      run: make .
+      run: make 
     - name : Tests 
       run : echo "Run some tests here ..."
       
