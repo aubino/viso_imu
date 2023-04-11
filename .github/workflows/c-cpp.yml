@@ -24,7 +24,7 @@ jobs:
       run : sudo apt install cmake
     - uses: actions/checkout@v3
     - name: Pre - Build
-      run: cd ~/viso_imu/ && rm -rf build && mkdir build && cd build && cmake ..
+      run: cd viso_imu/ && rm -rf build && mkdir build && cd build && cmake ..
     - name: Make
       run: make .
     - name : Tests 
