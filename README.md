@@ -1,3 +1,5 @@
+[![Build && Tests](https://github.com/aubino/viso_imu/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/aubino/viso_imu/actions/workflows/c-cpp.yml)
+
 ## VISO_IMU Project
     This project is a visual odometry implementation that try to solve translation ambiguity with imu datas. 
     It is supposed to work on jetson nano with an IMX219-83 camera and it's on board IMU 
