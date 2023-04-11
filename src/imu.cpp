@@ -1,4 +1,4 @@
-//#include "imu.h"
+#include "imu.h"
 
 Imu::Imu(std::string imu_name,time_t start_time) : 
         name(imu_name) ,
