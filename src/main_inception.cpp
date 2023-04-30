@@ -324,5 +324,4 @@ int main(int argc , char** argv)
     //viso_thread(config_file); 
     //imu_tread(0.01);
     return 1;
-
 }

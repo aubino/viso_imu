@@ -5,4 +5,14 @@ class ImageStamped
     public:
     cv::Mat image;
     time_t t;
+    ImageStamped()
+    {
+        return
+    };
+    
+    ImageStamped(time_t T,cv::Mat im)
+    {
+        image = im;
+        t = T
+    };
 };
