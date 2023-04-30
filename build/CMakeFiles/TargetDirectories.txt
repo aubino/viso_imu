@@ -1,6 +1,0 @@
-/home/aubin/viso_imu/build/CMakeFiles/rebuild_cache.dir
-/home/aubin/viso_imu/build/CMakeFiles/edit_cache.dir
-/home/aubin/viso_imu/build/CMakeFiles/simple_camera.dir
-/home/aubin/viso_imu/build/CMakeFiles/imu_test.dir
-/home/aubin/viso_imu/build/CMakeFiles/viso_imu_test.dir
-/home/aubin/viso_imu/build/CMakeFiles/viso_imu.dir
