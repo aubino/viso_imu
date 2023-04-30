@@ -7,12 +7,12 @@ class ImageStamped
     time_t t;
     ImageStamped()
     {
-        return
+        return ;
     };
     
     ImageStamped(time_t T,cv::Mat im)
     {
         image = im;
-        t = T
+        t = T; 
     };
 };

@@ -2,7 +2,7 @@
 
 void signal_callback_handler(int signum) 
     {
-        std::cout << "Caught signal  " << signum << " Inside the stereoUsbCaptureThread thread. Exciting now  " std::endl;
+        std::cout << "Caught signal  " << signum << " Inside the stereoUsbCaptureThread thread. Exciting now  "<< std::endl;
         // Terminate program
         std::terminate() ;
     };
@@ -69,7 +69,7 @@ bool StereoImage::setRight(const ImageStamped& image)
 }
 
 
-int stereoUsbCaptureThread(int usb_channel,StereoImageRessource ressource, bool verbose = false,bool debug = false)
+int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool verbose ,bool debug)
 {
     signal(SIGINT,signal_callback_handler);
     signal(SIGTERM,signal_callback_handler);
