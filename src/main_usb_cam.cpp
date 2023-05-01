@@ -6,14 +6,18 @@ namespace po = boost::program_options;
 int main(int argc,char** argv)
 {
     po::options_description desc("Mandatory options");
-    u_int channel;
+    int channel;
+    int width = 240;
+    int heigh = 380;
     bool debug = false;
     bool verbose = false;
     desc.add_options ()
-    ("help,h","This node is used to send cartesian commands to the robot arm. Allowed options are : ")
-    ("channel,c",boost::program_options::value<int>(),"The topic on which the program will find camera infos. Mandatory option");
-    ("debug,D",boost::program_options::value<bool>(),"Whether to show debug options and logs or not. Optional argument");
-    ("verbose,v",boost::program_options::value<bool>(),"Allow verbose logs or not . Optional argument");
+    ("help,h","This executable launches the usb stereo camera driver  ")
+    ("channel,c",boost::program_options::value<int>(),"The topic on which the program will find camera infos. Mandatory option")
+    ("debug,D",boost::program_options::value<bool>(),"Whether to show debug options and logs or not. Optional argument")
+    ("verbose,v",boost::program_options::value<bool>(),"Allow verbose logs or not . Optional argument")
+    ("Width,W",boost::program_options::value<int>(),"width of the image . Optional argument")
+    ("Heigh,H",boost::program_options::value<int>(),"Heigh of the image . Optional argument");
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
@@ -29,11 +33,27 @@ int main(int argc,char** argv)
         if(vm.count("debug"))
             debug = vm["debug"].as<bool>();
         if(vm.count("verbose"))
-            verbose = vm["verbose"].as<bool>(); 
+            verbose = vm["verbose"].as<bool>();
+        if(vm.count("Width"))
+            width = vm["Width"].as<int>();
+        if(vm.count("Heigh"))
+            heigh = vm["Heigh"].as<int>();
 
     }
-    
-    StereoImageRessource ressource = std::make_unique<StereoImage>(RESOLUTION(240,380));
+    std::cout<<"===================================================="<<std::endl;
+    std::cout<<"|               Used arguments summary              |"<<std::endl;
+    std::cout<<"|---------------------------------------------------|"<<std::endl;
+    std::cout<<"|   Videoport Number    |             "<<channel<<"             |"<<std::endl;
+    std::cout<<"|---------------------------------------------------|"<<std::endl;
+    std::cout<<"|   Frame Width         |             "<<width<<"           |"<<std::endl;
+    std::cout<<"|---------------------------------------------------|"<<std::endl;
+    std::cout<<"|   Frame Heigh         |             "<<heigh<<"           |"<<std::endl;
+    std::cout<<"|---------------------------------------------------|"<<std::endl;
+    std::cout<<"|   Debug Option        |               "<<debug<<"           |"<<std::endl;
+    std::cout<<"|---------------------------------------------------|"<<std::endl;
+    std::cout<<"|   Verbose Option      |               "<<verbose<<"           |"<<std::endl;
+    std::cout<<"===================================================="<<std::endl;
+    StereoImageRessource ressource = std::make_unique<StereoImage>(RESOLUTION(width,heigh));
     stereoUsbCaptureThread(0,ressource,verbose,debug);
     return 1;
 

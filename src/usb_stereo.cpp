@@ -126,8 +126,9 @@ int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool
         
         }
         
-        else  
-            std::cout<<"The Image could not be red. Tips : check the connection port of hardware connection"<<std::endl;
-        cv::waitKey(1);
+        else
+            if(debug)   
+                std::cout<<"The Image could not be red. Tips : check the connection port of hardware connection"<<std::endl;
+        cv::waitKey(5);
     }
 }
