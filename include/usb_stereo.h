@@ -44,4 +44,4 @@ using StereoImageRessource = std::shared_ptr<StereoImage> ;
 
 const std::map<RESOLUTION,float> RES_FPS_MAP({{RESOLUTION(10,20),10},{RESOLUTION(20,30),60}}); //TODO Take the good values from vendor and put theme here
 
-int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool verbose = false,bool debug = false);
+int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool undistord = false, bool verbose = false,bool debug = false);

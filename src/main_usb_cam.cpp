@@ -11,9 +11,11 @@ int main(int argc,char** argv)
     int heigh = 380;
     bool debug = false;
     bool verbose = false;
+    bool undistord = false ; 
     desc.add_options ()
     ("help,h","This executable launches the usb stereo camera driver  ")
     ("channel,c",boost::program_options::value<int>(),"The topic on which the program will find camera infos. Mandatory option")
+    ("undistord,u",boost::program_options::value<bool>(),"Whether to undistord the raw image or not. Optional argument")
     ("debug,D",boost::program_options::value<bool>(),"Whether to show debug options and logs or not. Optional argument")
     ("verbose,v",boost::program_options::value<bool>(),"Allow verbose logs or not . Optional argument")
     ("Width,W",boost::program_options::value<int>(),"width of the image . Optional argument")
@@ -49,10 +51,12 @@ int main(int argc,char** argv)
     std::cout<<"|---------------------------------------------------|"<<std::endl;
     std::cout<<"|   Frame Heigh         |             "<<heigh<<"           |"<<std::endl;
     std::cout<<"|---------------------------------------------------|"<<std::endl;
+    std::cout<<"|   Undistord Option    |               "<<undistord<<"           |"<<std::endl;
+    std::cout<<"|---------------------------------------------------|"<<std::endl;
     std::cout<<"|   Debug Option        |               "<<debug<<"           |"<<std::endl;
     std::cout<<"|---------------------------------------------------|"<<std::endl;
     std::cout<<"|   Verbose Option      |               "<<verbose<<"           |"<<std::endl;
     std::cout<<"===================================================="<<std::endl;
     StereoImageRessource ressource = std::make_shared<StereoImage>(RESOLUTION(width,heigh));
-    return stereoUsbCaptureThread(0,ressource,verbose,debug);
+    return stereoUsbCaptureThread(0,ressource,undistord,verbose,debug);
 }

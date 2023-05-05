@@ -41,4 +41,19 @@ class CameraParams
         {
             return load_from(file);
         };
+
+        cv::Mat getCameraMatrix()
+        {
+            return intrinsics;
+        };
+        
+        cv::Mat getDistorsion()
+        {
+            return distorsion;
+        };
+
+        cv::Mat getProjectionMatrix()
+        {
+            return projection_matrix;
+        };
 };

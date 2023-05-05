@@ -76,12 +76,13 @@ bool StereoImage::setRight(const ImageStamped& image)
 }
 
 
-int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool verbose ,bool debug)
+int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool undistord,bool verbose ,bool debug)
 {
     signal(SIGINT,signal_callback_handler);
     signal(SIGTERM,signal_callback_handler);
     float fps = 0;
     cv::VideoCapture capture_interface(usb_channel);
+    
     try 
     {
         fps = RES_FPS_MAP.at(ressource->resolution) ;
@@ -97,6 +98,7 @@ int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool
     capture_interface.set(cv::CAP_PROP_FPS,fps);
     capture_interface.set(cv::CAP_PROP_FRAME_WIDTH,ressource->resolution.width);
     capture_interface.set(cv::CAP_PROP_FRAME_HEIGHT,ressource->resolution.heigh);
+    
     while(true)
     {
         cv::Mat captured_image;
@@ -119,6 +121,15 @@ int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool
                     half_right.at<uchar>(i,j) = captured_image.at<uchar>(i,j) ;
             }
 
+            if(undistord)
+            {
+                cv::Mat distorsion_buffer ; 
+                cv::undistort(half_left,distorsion_buffer,ressource->left_params.getCameraMatrix(),ressource->left_params.getDistorsion());
+                half_left = distorsion_buffer ;
+                cv::undistort(half_right,distorsion_buffer,ressource->right_params.getCameraMatrix(),ressource->right_params.getDistorsion());
+                half_right = distorsion_buffer ;
+            }
+
             if(ressource->setLeft(ImageStamped(time(NULL),half_left)) && ressource->setRight(ImageStamped(time(NULL),half_right)))
             {
                 if(debug)
@@ -138,6 +149,7 @@ int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool
                 std::cout<<"The Image could not be red. Tips : check the connection port of hardware connection"<<std::endl;
         cv::waitKey(5);
     }
+    
     capture_interface.release();
     cv::destroyAllWindows();
     return 0 ;
