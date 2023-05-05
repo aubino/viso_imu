@@ -13,38 +13,22 @@
 #include <mutex>
 #include <chrono>
 #include <memory>
-#include <math.h>
+#include <iostream>
+#include "camera_params.h"
+#include "resolution.h"
 
-
-typedef struct RESOLUTION
-{
-    public : 
-        int heigh= 0,width = 0;
-        RESOLUTION()
-        {
-            heigh = 240 ;
-            width = 380 ;
-        }
-        
-        RESOLUTION(int w,int h)
-        {
-            heigh = h;
-            width = w;
-        };
-        
-        bool operator <(const RESOLUTION& r1) const 
-        {
-            return sqrt(this->heigh*this->heigh + this->width*this->width) < sqrt(r1.heigh*r1.heigh + r1.width*r1.width);
-        } 
-
-} RESOLUTION ;
 
 class StereoImage
 {
     public : 
         std::mutex mutex;
         RESOLUTION resolution;
+        CameraParams left_params;
+        CameraParams right_params;
         StereoImage(RESOLUTION res);
+        StereoImage(CameraParams lp, CameraParams rp);
+        void setLeftParams(CameraParams params) ;
+        void setRightParams(CameraParams params) ;
         std::pair<ImageStamped,ImageStamped> getImages();
         ImageStamped getLeft();
         ImageStamped getRight();
@@ -53,9 +37,10 @@ class StereoImage
     private :
         ImageStamped left;
         ImageStamped right;
+     
 };
 
-using StereoImageRessource = std::unique_ptr<StereoImage> ;
+using StereoImageRessource = std::shared_ptr<StereoImage> ;
 
 const std::map<RESOLUTION,float> RES_FPS_MAP({{RESOLUTION(10,20),10},{RESOLUTION(20,30),60}}); //TODO Take the good values from vendor and put theme here
 

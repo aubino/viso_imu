@@ -13,6 +13,13 @@ StereoImage::StereoImage(RESOLUTION res)
     return;
 }
 
+StereoImage::StereoImage(CameraParams lp, CameraParams rp)
+{
+    left_params = lp;
+    right_params = rp;
+    resolution = lp.resolution ;
+}
+
 std::pair<ImageStamped,ImageStamped> StereoImage::getImages()
 {
     if(mutex.try_lock())
@@ -131,4 +138,7 @@ int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool
                 std::cout<<"The Image could not be red. Tips : check the connection port of hardware connection"<<std::endl;
         cv::waitKey(5);
     }
+    capture_interface.release();
+    cv::destroyAllWindows();
+    return 0 ;
 }

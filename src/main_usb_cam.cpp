@@ -53,8 +53,6 @@ int main(int argc,char** argv)
     std::cout<<"|---------------------------------------------------|"<<std::endl;
     std::cout<<"|   Verbose Option      |               "<<verbose<<"           |"<<std::endl;
     std::cout<<"===================================================="<<std::endl;
-    StereoImageRessource ressource = std::make_unique<StereoImage>(RESOLUTION(width,heigh));
-    stereoUsbCaptureThread(0,ressource,verbose,debug);
-    return 1;
-
+    StereoImageRessource ressource = std::make_shared<StereoImage>(RESOLUTION(width,heigh));
+    return stereoUsbCaptureThread(0,ressource,verbose,debug);
 }
