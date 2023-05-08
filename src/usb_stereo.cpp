@@ -81,7 +81,10 @@ int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool
     signal(SIGINT,signal_callback_handler);
     signal(SIGTERM,signal_callback_handler);
     float fps = 0;
-    cv::VideoCapture capture_interface(usb_channel);
+    std::stringstream ss ;
+    ss<< "/dev/video";
+    ss<< usb_channel;
+    cv::VideoCapture capture_interface(ss.str(),cv::CAP_V4L);
     
     try 
     {
