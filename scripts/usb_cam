@@ -1,0 +1,102 @@
+#!/usr/bin/python3
+import argparse
+import subprocess
+from stereo_usb_driver import StereoRosWrapper , StereoUsbDriver
+argument_parser = argparse.ArgumentParser(description = "An entry point to launch the stereo camera driver")
+
+argument_parser.add_argument("-v","--verbose",
+                            help="Wether the driver should be verbose or not ",
+                            type=bool,
+                            default=False,
+                            required=False)
+argument_parser.add_argument("-c","--channel",
+                            help=" Device channel. /dev/usb/video ",
+                            type=int,
+                            required=True)
+
+argument_parser.add_argument("-W","--Width",
+                            help=" Image width ",
+                            type=int,
+                            required=True)
+
+argument_parser.add_argument("-H","--Height",
+                            help=" Image Height ",
+                            type=int,
+                            required=True)
+
+argument_parser.add_argument("-d","--debug",
+                            help="Enables debug options.Displaying images is thus possible ",
+                            type=bool,
+                            default=False,
+                            required=False)
+
+argument_parser.add_argument("-u","--undistort",
+                            help="Enables undistortion right away before eventually sending the images to ROS",
+                            type=bool,
+                            default=False,
+                            required=False)
+
+argument_parser.add_argument("-r","--ros",
+                            help="Enables ros usage to publish ",
+                            type=bool,
+                            default=False,
+                            required=False)
+
+argument_parser.add_argument(
+    "--left-config",
+    help="The yaml file containing calibration results and intrinsics for the left camera",
+    type=str,
+    default="",
+    required=False
+)
+
+argument_parser.add_argument(
+    "--right-config",
+    help="The yaml file containing calibration results and intrinsics for the left camera",
+    type=str,
+    default="",
+    required=False
+)
+
+argument_parser.add_argument(
+    "--ros-config",
+    help="The yaml file containing calibration results and intrinsics for the left camera",
+    type=str,
+    default="",
+    required=False
+)
+
+if __name__ == "__main__" :
+    argument_parser.parse_args()
+    if not argument_parser.ros : 
+        if not argument_parser.undistort :
+            driver = StereoUsbDriver(argument_parser.channel,
+                                    (argument_parser.Width,argument_parser.Height),
+                                    verbose=argument_parser.verbose,
+                                    debug=argument_parser.debug,
+                                    )
+            if driver.run_acquisition_loop() :
+                print(" Application exited after execution or break requested ")
+                exit(0)
+                
+        else : 
+            if argument_parser.left_config == "" or argument_parser.right_config == "" :
+                print("No argument was given as config file for cameras, while undistorsion has been requested. Exiting application ")
+                exit(0)
+            else : 
+                driver = StereoUsbDriver(argument_parser.channel,
+                                    (argument_parser.Width,argument_parser.Height),
+                                    verbose=argument_parser.verbose,
+                                    debug=argument_parser.debug,
+                                    left_cfg=argument_parser.left_config,
+                                    right_cfg=argument_parser.right_config,
+                                    undistort=argument_parser.undistort
+                                    )
+                if driver.run_acquisition_loop() :
+                    print(" Application exited after execution or break requested ")
+                    exit(0)
+    else : 
+        
+
+
+

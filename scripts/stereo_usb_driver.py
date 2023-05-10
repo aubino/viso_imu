@@ -47,7 +47,7 @@ def yaml_to_CameraInfo(yaml_fname) -> CameraInfo:
     camera_info_msg.distortion_model = calib_data["distortion_model"]
     return camera_info_msg
 
-class StereoRosUsbDriver(object) :
+class StereoUsbDriver(object) :
     __instance__ = None
 
     def __init__(self,channel : int , resolution: tuple[int,int],left_cfg : str = "",right_cfg : str = "",undistort : bool =False, verbose : bool = False , debug : bool = False) -> None:
@@ -111,13 +111,13 @@ class StereoRosUsbDriver(object) :
                 break
         return True
     
-    def __new__(cls,*args, **kwargs) -> StereoRosUsbDriver:
+    def __new__(cls,*args, **kwargs) -> StereoUsbDriver:
         if not isinstance(cls.__instance__, cls):
             cls.__instance__ = object.__new__(cls, *args, **kwargs)
         return cls.__instance__
 
 
-class StereoRosWrapper(StereoRosUsbDriver) :
+class StereoRosWrapper(StereoUsbDriver) :
     
     def __init__(self, channel: int, 
                 resolution: tuple[int, int],
@@ -151,8 +151,10 @@ class StereoRosWrapper(StereoRosUsbDriver) :
         right_cam_info_topic_name = rospy.get_param('~/right_cam_info_topic_name',"right_info")
         self.left_image_topic = rospy.Publisher(left_topic_name,Image,queue_size=1)
         self.right_image_topic = rospy.Publisher(right_topic_name,Image,queue_size=1)
-        self.left_info_topic = rospy.Publisher(left_cam_info_topic_name,CameraInfo,queue_size=1)
-        self.right_info_topic = rospy.Publisher(right_cam_info_topic_name,CameraInfo,queue_size=1)
+        if self.right_cam_infos is not None : 
+            self.left_info_topic = rospy.Publisher(left_cam_info_topic_name,CameraInfo,queue_size=1)
+        if self.left_cam_infos is not None :
+            self.right_info_topic = rospy.Publisher(right_cam_info_topic_name,CameraInfo,queue_size=1)
         
     def loop(self) :
         rospy.init_node('StereoRosWrapper', anonymous=False)
@@ -162,8 +164,10 @@ class StereoRosWrapper(StereoRosUsbDriver) :
                 break
             self.left_image_topic.publish(self.leftImage)
             self.right_image_topic.publish(self.rightImage)
-            self.left_info_topic.publish(self.left_cam_infos)
-            self.right_info_topic.publish(self.right_cam_infos)
+            if self.left_cam_infos is not None : 
+                self.left_info_topic.publish(self.left_cam_infos)
+            if self.right_cam_infos is not None :
+                self.right_info_topic.publish(self.right_cam_infos)
         rospy.logwarn_once("The acquisition loop has excited after request ")
 
 
