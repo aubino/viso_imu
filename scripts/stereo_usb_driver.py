@@ -117,8 +117,53 @@ class StereoRosUsbDriver(object) :
         return cls.__instance__
 
 
-class StereoRosWrapper(object) :
+class StereoRosWrapper(StereoRosUsbDriver) :
     
-    def __init__(self,) -> None:
-        pass    
+    def __init__(self, channel: int, 
+                resolution: tuple[int, int],
+                ros_config : str, left_cfg: str = "", 
+                right_cfg: str = "", 
+                undistort: bool = False, 
+                verbose: bool = False, 
+                debug: bool = False) -> None:
+        """_summary_
+
+        Args:
+            channel (int): _description_
+            resolution (tuple[int, int]): _description_
+            ros_config (str): _description_
+            left_cfg (str, optional): _description_. Defaults to "".
+            right_cfg (str, optional): _description_. Defaults to "".
+            undistort (bool, optional): _description_. Defaults to False.
+            verbose (bool, optional): _description_. Defaults to False.
+            debug (bool, optional): _description_. Defaults to False.
+        """
+        _debug = debug
+        _verbose = verbose
+        _verbose = rospy.get_param('~/verbose',False)
+        _debug   = rospy.get_param('~/verbose',False)
+        super().__init__(
+            channel, resolution, left_cfg, right_cfg, undistort, _verbose, _debug
+        )
+        left_topic_name = rospy.get_param('~/left_topic_name',"left_camera")
+        right_topic_name = rospy.get_param('~/right_topic_name',"right_camera")
+        left_cam_info_topic_name = rospy.get_param('~/left_cam_info_topic_name',"left_info")
+        right_cam_info_topic_name = rospy.get_param('~/right_cam_info_topic_name',"right_info")
+        self.left_image_topic = rospy.Publisher(left_topic_name,Image,queue_size=1)
+        self.right_image_topic = rospy.Publisher(right_topic_name,Image,queue_size=1)
+        self.left_info_topic = rospy.Publisher(left_cam_info_topic_name,CameraInfo,queue_size=1)
+        self.right_info_topic = rospy.Publisher(right_cam_info_topic_name,CameraInfo,queue_size=1)
         
+    def loop(self) :
+        rospy.init_node('StereoRosWrapper', anonymous=False)
+        while not rospy.is_shutdown() : 
+            self.acquire_frame()
+            if cv2.waitKey(4) & 0xFF == ord('w'):
+                break
+            self.left_image_topic.publish(self.leftImage)
+            self.right_image_topic.publish(self.rightImage)
+            self.left_info_topic.publish(self.left_cam_infos)
+            self.right_info_topic.publish(self.right_cam_infos)
+        rospy.logwarn_once("The acquisition loop has excited after request ")
+
+
