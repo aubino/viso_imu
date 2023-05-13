@@ -48,11 +48,12 @@ def yaml_to_CameraInfo(yaml_fname) -> CameraInfo:
     return camera_info_msg
 
 class StereoUsbDriver(object) :
-    __instance__ = None
+    __instance__ : StereoUsbDriver = None
 
     def __init__(self,channel : int , resolution: tuple[int,int],left_cfg : str = "",right_cfg : str = "",undistort : bool =False, verbose : bool = False , debug : bool = False) -> None:
         if StereoUsbDriver.__instance__ is not None:
-            self = __instance__
+            if StereoUsbDriver.__instance__._usb_channel_ == channel:
+                self = __instance__
         else: 
             self._usb_channel_ = channel
             self.verbose = verbose
@@ -119,12 +120,6 @@ class StereoUsbDriver(object) :
             if cv2.waitKey(4) & 0xFF == ord('w'):
                 break
         return True
-    
-    # def __new__(cls) -> StereoUsbDriver:
-        # if not hasattr(cls, 'instance'):
-            # cls.instance = super(StereoUsbDriver, cls).__new__(cls)
-        # return cls.instance
-
 
 class StereoRosWrapper(StereoUsbDriver) :
     
