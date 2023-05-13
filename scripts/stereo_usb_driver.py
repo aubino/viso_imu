@@ -48,20 +48,26 @@ def yaml_to_CameraInfo(yaml_fname) -> CameraInfo:
     return camera_info_msg
 
 class StereoUsbDriver(object) :
-    __instance__ : StereoUsbDriver = None
+    __instances__ : list[StereoUsbDriver] = []
 
     def __init__(self,channel : int , resolution: tuple[int,int],left_cfg : str = "",right_cfg : str = "",undistort : bool =False, verbose : bool = False , debug : bool = False) -> None:
-        if StereoUsbDriver.__instance__ is not None:
-            if StereoUsbDriver.__instance__._usb_channel_ == channel:
-                self = __instance__
+        if len(StereoUsbDriver.__instances__) != 0:
+            for instance in StereoUsbDriver.__instances__ : 
+                if instance._usb_channel_ == channel :
+                    self = instance
+            return
         else: 
             self._usb_channel_ = channel
             self.verbose = verbose
             self.debug = debug
             self._right_frame_ : np.array = np.zeros(np.shape((resolution[0],resolution[1])))
             self._left_frame_ : np.array = np.zeros(np.shape((resolution[0],resolution[1])))
+            self._left_frame_rec : np.array
+            self._right_frame_rec : np.array
             self.leftImage : Image = None
             self.rightImage : Image = None
+            self.leftImageRec : Image = None
+            self.rightImageRec : Image = None
             self._capture_object_  = cv2.VideoCapture(channel)
             self.__bridge__ = CvBridge()
             fps = 0
@@ -78,6 +84,8 @@ class StereoUsbDriver(object) :
             self._capture_object_.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
             self.left_cam_infos : CameraInfo  = None
             self.right_cam_infos : CameraInfo = None
+            self.left_cam_infos_rec : CameraInfo = None
+            self.right_cam_infos_rec : CameraInfo = None
             if undistort : 
                 success,self.left_cam_infos,self.right_cam_infos = get_stereo_calibration_infos(left_config=left_cfg,right_config=right_cfg)
                 if verbose and not success : 
@@ -87,7 +95,7 @@ class StereoUsbDriver(object) :
                     print("Left Intrinsics : ",self.left_cam_infos)
                     print("")
                     print("Right intrinsics : ",self.right_cam_infos)
-            __instance__ = self
+            StereoUsbDriver.__instances__.append(self)
         return
         
     def acquire_frame(self) -> bool :
@@ -113,6 +121,24 @@ class StereoUsbDriver(object) :
             (self.left_cam_infos is None) or (self.right_cam_infos is None)
         ) and self.verbose:
             print("No Parameters have been given as camera parameters.")
+    
+    def undistort(self):
+        left_camera_matrix = np.array([[self.left_cam_infos.K[0],self.left_cam_infos.K[1],self.left_cam_infos.K[2]],
+                                            [self.left_cam_infos.K[3],self.left_cam_infos.K[4],self.left_cam_infos.K[5]],
+                                            [self.left_cam_infos.K[6],self.left_cam_infos.K[7],self.left_cam_infos.K[8]]])
+        left_distortion_matrix = np.array([list(self.left_cam_infos.D)])
+        right_camera_matrix = np.array([[self.right_cam_infos.K[0],self.right_cam_infos.K[1],self.right_cam_infos.K[2]],
+                                            [self.right_cam_infos.K[3],self.right_cam_infos.K[4],self.right_cam_infos.K[5]],
+                                            [self.right_cam_infos.K[6],self.right_cam_infos.K[7],self.right_cam_infos.K[8]]])
+        right_distortion_matrix = np.array([list(self.right_cam_infos.D)])
+        left_opt_camera_matrix, validLeftPixROI = cv2.getOptimalNewCameraMatrix(left_camera_matrix, left_distortion_matrix, self.,
+        1)
+        right_opt_camera_matrix, validRightPixROI = cv2.getOptimalNewCameraMatrix(right_camera_matrix, right_distortion_matrix, self.,
+        1)
+        self._left_frame_rec =  cv2.undistort(self._left_frame_, left_camera_matrix, left_distortion_matrix, None, left_opt_camera_matrix)
+        self._right_frame_rec = cv2.undistort(self._right_frame_, right_camera_matrix, right_distortion_matrix, None, right_opt_camera_matrix)
+        
+        
     
     def run_acquisition_loop(self) -> bool : 
         while True : 
