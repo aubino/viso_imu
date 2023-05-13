@@ -51,39 +51,48 @@ class StereoUsbDriver(object) :
     __instance__ = None
 
     def __init__(self,channel : int , resolution: tuple[int,int],left_cfg : str = "",right_cfg : str = "",undistort : bool =False, verbose : bool = False , debug : bool = False) -> None:
-        self._usb_channel_ = channel
-        self.verbose = verbose 
-        self.debug = debug 
-        self._right_frame_ : np.array = np.zeros(np.shape(resolution[0],resolution[1]))
-        self._left_frame_ : np.array = np.zeros(np.shape(resolution[0],resolution[1]))
-        self.leftImage : Image = None
-        self.rightImage : Image = None
-        self._capture_object_  = cv2.VideoCapture(channel)
-        self.__bridge__ = CvBridge()
-        fps = 0 
-        if verbose : 
-            try :
-                fps = VENDOR_RESOLUTIONS[resolution] 
-            except KeyError as e : 
-                print(" Could not find required resolution in the standard vendor resolution. Falling back to 60 fps")
-                fps = 60
-        else : 
-            fps = VENDOR_RESOLUTIONS.get(resolution,60)
-        self._capture_object_.set(cv2.CAP_PROP_FPS, fps)
-        self._capture_object_.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
-        self._capture_object_.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
-        self.left_cam_infos : CameraInfo  = None
-        self.right_cam_infos : CameraInfo = None
-        if undistort : 
-            success,self.left_cam_infos,self.right_cam_infos = get_stereo_calibration_infos(left_config=left_cfg,right_config=right_cfg)
-            if verbose and not success : 
-                print("Stereo Camera Parameters loading failed during object construction.")
-        __instance__ = self
+        if StereoUsbDriver.__instance__ is not None:
+            self = __instance__
+        else: 
+            self._usb_channel_ = channel
+            self.verbose = verbose
+            self.debug = debug
+            self._right_frame_ : np.array = np.zeros(np.shape((resolution[0],resolution[1])))
+            self._left_frame_ : np.array = np.zeros(np.shape((resolution[0],resolution[1])))
+            self.leftImage : Image = None
+            self.rightImage : Image = None
+            self._capture_object_  = cv2.VideoCapture(channel)
+            self.__bridge__ = CvBridge()
+            fps = 0
+            if verbose : 
+                try :
+                    fps = VENDOR_RESOLUTIONS[resolution] 
+                except KeyError as e : 
+                    print(" Could not find required resolution in the standard vendor resolutions. Falling back to 60 fps")
+                    fps = 60
+            else : 
+                fps = VENDOR_RESOLUTIONS.get(resolution,60)
+            self._capture_object_.set(cv2.CAP_PROP_FPS, fps)
+            self._capture_object_.set(cv2.CAP_PROP_FRAME_WIDTH, resolution[0])
+            self._capture_object_.set(cv2.CAP_PROP_FRAME_HEIGHT, resolution[1])
+            self.left_cam_infos : CameraInfo  = None
+            self.right_cam_infos : CameraInfo = None
+            if undistort : 
+                success,self.left_cam_infos,self.right_cam_infos = get_stereo_calibration_infos(left_config=left_cfg,right_config=right_cfg)
+                if verbose and not success : 
+                    print("Stereo Camera Parameters loading failed during object construction.")
+                if verbose and success : 
+                    print("Using the following intrinsic parameters : ")
+                    print("Left Intrinsics : ",self.left_cam_infos)
+                    print("")
+                    print("Right intrinsics : ",self.right_cam_infos)
+            __instance__ = self
+        return
         
     def acquire_frame(self) -> bool :
         success, original = self._capture_object_.read()
         if success : 
-            height ,width, channel = original.shape()
+            height ,width, channels = original.shape
             self._left_frame_ = original[0:height,0:int(width/2)]
             self._right_frame_ = original[0:height,int(width/2):(width)]
             if self.debug : 
@@ -111,10 +120,10 @@ class StereoUsbDriver(object) :
                 break
         return True
     
-    def __new__(cls,*args, **kwargs) -> StereoUsbDriver:
-        if not isinstance(cls.__instance__, cls):
-            cls.__instance__ = object.__new__(cls, *args, **kwargs)
-        return cls.__instance__
+    # def __new__(cls) -> StereoUsbDriver:
+        # if not hasattr(cls, 'instance'):
+            # cls.instance = super(StereoUsbDriver, cls).__new__(cls)
+        # return cls.instance
 
 
 class StereoRosWrapper(StereoUsbDriver) :
