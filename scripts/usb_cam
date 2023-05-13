@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import argparse
+import sys
 import os, time
 import subprocess
 from stereo_usb_driver import StereoRosWrapper , StereoUsbDriver
@@ -68,46 +69,46 @@ argument_parser.add_argument("--ros-config",
 )
 
 if __name__ == "__main__" :
-    argument_parser.parse_args()
-    if not argument_parser.ros : 
-        if not argument_parser.undistort :
-            driver = StereoUsbDriver(argument_parser.channel,
-                                    (argument_parser.Width,argument_parser.Height),
-                                    verbose=argument_parser.verbose,
-                                    debug=argument_parser.debug,
+    arguments = argument_parser.parse_args()
+    if not arguments.ros : 
+        if not arguments.undistort :
+            driver = StereoUsbDriver(arguments.channel,
+                                    (arguments.Width,arguments.Height),
+                                    verbose=arguments.verbose,
+                                    debug=arguments.debug,
                                     )
             if driver.run_acquisition_loop() :
                 print(" Application exited after execution or break requested ")
                 exit(0)
                 
         else : 
-            if argument_parser.left_config == "" or argument_parser.right_config == "" :
+            if arguments.left_config == "" or arguments.right_config == "" :
                 print("No argument was given as config file for cameras, while undistorsion has been requested. Exiting application ")
                 exit(0)
             else : 
-                driver = StereoUsbDriver(argument_parser.channel,
-                                    (argument_parser.Width,argument_parser.Height),
-                                    verbose=argument_parser.verbose,
-                                    debug=argument_parser.debug,
-                                    left_cfg=argument_parser.left_config,
-                                    right_cfg=argument_parser.right_config,
-                                    undistort=argument_parser.undistort
+                driver = StereoUsbDriver(arguments.channel,
+                                    (arguments.Width,arguments.Height),
+                                    verbose=arguments.verbose,
+                                    debug=arguments.debug,
+                                    left_cfg=arguments.left_config,
+                                    right_cfg=arguments.right_config,
+                                    undistort=arguments.undistort
                                     )
                 if driver.run_acquisition_loop() :
                     print(" Application exited after execution or break requested ")
                     exit(0)
     else :
-        if os.path.isfile(argument_parser.ros_config) : 
-            client = roslibpy.Ros(host='localhost', port=9090)
-            client.run()
-            client.on_ready(lambda : subprocess.Popen("rosparam load {} StereoRosWrapper".format(argument_parser.ros_config)))
-            ros_driver = StereoRosWrapper(argument_parser.channel,
-                                            (argument_parser.Width,argument_parser.Height),
-                                            left_cfg=argument_parser.left_cfg,
-                                            right_cfg=argument_parser.right_cfg,
-                                            undistort=argument_parser.undistort,
-                                            verbose=argument_parser.verbose,
-                                            debug=argument_parser.debug)
+        if os.path.isfile(arguments.ros_config) : 
+            call_roscore = subprocess.Popen("roscore")
+            time.sleep(2)
+            subprocess.run(["rosparam","load","/home/aubin/viso_imu/config/usb_driver_ros_cfg.yaml","StereoRosWrapper"])
+            ros_driver = StereoRosWrapper(arguments.channel,
+                                            (arguments.Width,arguments.Height),
+                                            left_cfg=arguments.left_config,
+                                            right_cfg=arguments.right_config,
+                                            undistort=arguments.undistort,
+                                            verbose=arguments.verbose,
+                                            debug=arguments.debug)
             ros_driver.loop()
         else : 
             print("The use of ROS was selected for the driver but no valid ros file config was given. Exciting...")

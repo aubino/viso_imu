@@ -168,15 +168,16 @@ class StereoRosWrapper(StereoUsbDriver) :
     def loop(self) :
         rospy.init_node('StereoRosWrapper', anonymous=False)
         while not rospy.is_shutdown() : 
-            self.acquire_frame()
-            if cv2.waitKey(4) & 0xFF == ord('w'):
-                break
-            self.left_image_topic.publish(self.leftImage)
-            self.right_image_topic.publish(self.rightImage)
-            if self.left_cam_infos is not None : 
-                self.left_info_topic.publish(self.left_cam_infos)
-            if self.right_cam_infos is not None :
-                self.right_info_topic.publish(self.right_cam_infos)
+            if self.acquire_frame() :
+                self.exportToRosMsgs()
+                if cv2.waitKey(4) & 0xFF == ord('w'):
+                    break
+                self.left_image_topic.publish(self.leftImage)
+                self.right_image_topic.publish(self.rightImage)
+                if self.left_cam_infos is not None : 
+                    self.left_info_topic.publish(self.left_cam_infos)
+                if self.right_cam_infos is not None :
+                    self.right_info_topic.publish(self.right_cam_infos)
         rospy.logwarn_once("The acquisition loop has excited after request ")
 
 
