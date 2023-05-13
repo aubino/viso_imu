@@ -121,7 +121,7 @@ class StereoRosWrapper(StereoUsbDriver) :
     
     def __init__(self, channel: int, 
                 resolution: tuple[int, int],
-                ros_config : str, left_cfg: str = "", 
+                left_cfg: str = "", 
                 right_cfg: str = "", 
                 undistort: bool = False, 
                 verbose: bool = False, 
@@ -140,8 +140,8 @@ class StereoRosWrapper(StereoUsbDriver) :
         """
         _debug = debug
         _verbose = verbose
-        _verbose = rospy.get_param('~/verbose',False)
-        _debug   = rospy.get_param('~/verbose',False)
+        _verbose = rospy.get_param('~/verbose',_verbose)
+        _debug   = rospy.get_param('~/verbose',_debug)
         super().__init__(
             channel, resolution, left_cfg, right_cfg, undistort, _verbose, _debug
         )
