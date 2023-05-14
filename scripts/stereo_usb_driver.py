@@ -131,12 +131,21 @@ class StereoUsbDriver(object) :
                                             [self.right_cam_infos.K[3],self.right_cam_infos.K[4],self.right_cam_infos.K[5]],
                                             [self.right_cam_infos.K[6],self.right_cam_infos.K[7],self.right_cam_infos.K[8]]])
         right_distortion_matrix = np.array([list(self.right_cam_infos.D)])
-        left_opt_camera_matrix, validLeftPixROI = cv2.getOptimalNewCameraMatrix(left_camera_matrix, left_distortion_matrix, self.,
-        1)
-        right_opt_camera_matrix, validRightPixROI = cv2.getOptimalNewCameraMatrix(right_camera_matrix, right_distortion_matrix, self.,
-        1)
-        self._left_frame_rec =  cv2.undistort(self._left_frame_, left_camera_matrix, left_distortion_matrix, None, left_opt_camera_matrix)
-        self._right_frame_rec = cv2.undistort(self._right_frame_, right_camera_matrix, right_distortion_matrix, None, right_opt_camera_matrix)
+        # R1, R2, P1, P2, Q, validPixROI1, validPixROI2 = cv2.stereoRectify(left_camera_matrix,
+                                                                        #   left_distortion_matrix,
+                                                                        #   right_camera_matrix,
+                                                                        #   right_distortion_matrix,
+                                                                        #   (left_camera_matrix.Shape[0],left_camera_matrix.Shape[1]),
+                                                                        #   )
+        # left_opt_camera_matrix, validLeftPixROI = cv2.getOptimalNewCameraMatrix(left_camera_matrix, 
+                                                                                # left_distortion_matrix, 
+                                                                                # (self._left_frame_.Shape[0],self._left_frame_.Shape[1]),
+                                                                                # 1,
+                                                                                # (self._left_frame_.Shape[0],self._left_frame_.Shape[1]))
+        # right_opt_camera_matrix, validRightPixROI = cv2.getOptimalNewCameraMatrix(right_camera_matrix, right_distortion_matrix, self.,
+        # 1)
+        self._left_frame_rec =  cv2.undistort(self._left_frame_, left_camera_matrix, left_distortion_matrix, None, left_camera_matrix)
+        self._right_frame_rec = cv2.undistort(self._right_frame_, right_camera_matrix, right_distortion_matrix, None, left_camera_matrix)
         
         
     
