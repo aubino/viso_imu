@@ -6,6 +6,7 @@ import numpy as np
 import rospy
 import signal
 import yaml
+from std_msgs.msg import Header
 from  sensor_msgs.msg import CameraInfo ,Image 
 from cv_bridge import CvBridge, CvBridgeError
 VENDOR_RESOLUTIONS : dict[tuple[int,int],float] = {}
@@ -115,8 +116,8 @@ class StereoUsbDriver(object) :
             return False
 
     def exportToRosMsgs(self):
-        self.leftImage = self.__bridge__.cv2_to_imgmsg(self._left_frame_)
-        self.rightImage = self.__bridge__.cv2_to_imgmsg(self._right_frame_)
+        self.leftImage = self.__bridge__.cv2_to_imgmsg(self._left_frame_,encoding='bgr8' ,header=Header(frame_id= "stereo/left_frame"))
+        self.rightImage = self.__bridge__.cv2_to_imgmsg(self._right_frame_,encoding='bgr8',header=Header(frame_id= "stereo/right_frame"))
         if (
             (self.left_cam_infos is None) or (self.right_cam_infos is None)
         ) and self.verbose:
@@ -144,8 +145,8 @@ class StereoUsbDriver(object) :
                                                                                 # (self._left_frame_.Shape[0],self._left_frame_.Shape[1]))
         # right_opt_camera_matrix, validRightPixROI = cv2.getOptimalNewCameraMatrix(right_camera_matrix, right_distortion_matrix, self.,
         # 1)
-        self._left_frame_rec =  cv2.undistort(self._left_frame_, left_camera_matrix, left_distortion_matrix, None, left_camera_matrix)
-        self._right_frame_rec = cv2.undistort(self._right_frame_, right_camera_matrix, right_distortion_matrix, None, left_camera_matrix)
+        # self._left_frame_rec =  cv2.undistort(self._left_frame_, left_camera_matrix, left_distortion_matrix, None, left_camera_matrix)
+        # self._right_frame_rec = cv2.undistort(self._right_frame_, right_camera_matrix, right_distortion_matrix, None, left_camera_matrix)
         
         
     
