@@ -1,0 +1,10 @@
+<launch>
+    <node pkg="image_proc" type="image_proc" name="left_image_process" output="screen">
+        <remap from = "left_camera" to = "image_raw" />
+        <remap from = "left_info" to = "camera_info" />
+    <node/>
+    <!-- <node pkg="image_proc" type="image_proc" name="right_image_process" output="screen"> -->
+        <!-- <remap from = "left_camera" to = "image_raw" /> -->
+        <!-- <remap from = "left_info" to = "camera_info" /> -->
+    <!-- <node/> -->
+</launch>

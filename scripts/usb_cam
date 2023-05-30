@@ -101,7 +101,7 @@ if __name__ == "__main__" :
         if os.path.isfile(arguments.ros_config) : 
             call_roscore = subprocess.Popen("roscore")
             time.sleep(2)
-            subprocess.run(["rosparam","load","/home/aubin/viso_imu/config/usb_driver_ros_cfg.yaml","StereoRosWrapper"])
+            subprocess.run(["rosparam","load",arguments.ros_config,"StereoRosWrapper"])
             ros_driver = StereoRosWrapper(arguments.channel,
                                             (arguments.Width,arguments.Height),
                                             left_cfg=arguments.left_config,

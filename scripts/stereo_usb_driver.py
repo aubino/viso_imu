@@ -63,12 +63,14 @@ class StereoUsbDriver(object) :
             self.debug = debug
             self._right_frame_ : np.array = np.zeros(np.shape((resolution[0],resolution[1])))
             self._left_frame_ : np.array = np.zeros(np.shape((resolution[0],resolution[1])))
-            self._left_frame_rec : np.array
-            self._right_frame_rec : np.array
+            self._left_frame_rec : np.array = None 
+            self._right_frame_rec : np.array = None 
             self.leftImage : Image = None
             self.rightImage : Image = None
             self.leftImageRec : Image = None
             self.rightImageRec : Image = None
+            self.leftRectMap  = None 
+            self.rightRectMap = None 
             self._capture_object_  = cv2.VideoCapture(channel)
             self.__bridge__ = CvBridge()
             fps = 0
@@ -123,7 +125,7 @@ class StereoUsbDriver(object) :
         ) and self.verbose:
             print("No Parameters have been given as camera parameters.")
     
-    def undistort(self):
+    def compute_maps(self):
         left_camera_matrix = np.array([[self.left_cam_infos.K[0],self.left_cam_infos.K[1],self.left_cam_infos.K[2]],
                                             [self.left_cam_infos.K[3],self.left_cam_infos.K[4],self.left_cam_infos.K[5]],
                                             [self.left_cam_infos.K[6],self.left_cam_infos.K[7],self.left_cam_infos.K[8]]])
@@ -132,23 +134,30 @@ class StereoUsbDriver(object) :
                                             [self.right_cam_infos.K[3],self.right_cam_infos.K[4],self.right_cam_infos.K[5]],
                                             [self.right_cam_infos.K[6],self.right_cam_infos.K[7],self.right_cam_infos.K[8]]])
         right_distortion_matrix = np.array([list(self.right_cam_infos.D)])
-        # R1, R2, P1, P2, Q, validPixROI1, validPixROI2 = cv2.stereoRectify(left_camera_matrix,
-                                                                        #   left_distortion_matrix,
-                                                                        #   right_camera_matrix,
-                                                                        #   right_distortion_matrix,
-                                                                        #   (left_camera_matrix.Shape[0],left_camera_matrix.Shape[1]),
-                                                                        #   )
+        R1, R2, P1, P2, Q, validPixROI1, validPixROI2 = cv2.stereoRectify(left_camera_matrix,
+                                                                            left_distortion_matrix,
+                                                                            right_camera_matrix,
+                                                                            right_distortion_matrix,
+                                                                            (left_camera_matrix.Shape[0],left_camera_matrix.Shape[1]),
+                                                                            )
+        #TODO
+        #Find rotation matrix and translation matrix from camera params to properly call stereoRectify (turns out i already have them)
+        # call initUndistortRectifyMap to save undistorsion map (see https://docs.opencv.org/3.4/da/d54/group__imgproc__transform.html#ga7dfb72c9cf9780a347fbe3d1c47e5d5a)
+        # see here https://learnopencv.com/depth-perception-using-stereo-camera-python-c/ as example
+        return
+    
+    def undistort(self):
         # left_opt_camera_matrix, validLeftPixROI = cv2.getOptimalNewCameraMatrix(left_camera_matrix, 
                                                                                 # left_distortion_matrix, 
                                                                                 # (self._left_frame_.Shape[0],self._left_frame_.Shape[1]),
                                                                                 # 1,
                                                                                 # (self._left_frame_.Shape[0],self._left_frame_.Shape[1]))
-        # right_opt_camera_matrix, validRightPixROI = cv2.getOptimalNewCameraMatrix(right_camera_matrix, right_distortion_matrix, self.,
-        # 1)
-        # self._left_frame_rec =  cv2.undistort(self._left_frame_, left_camera_matrix, left_distortion_matrix, None, left_camera_matrix)
-        # self._right_frame_rec = cv2.undistort(self._right_frame_, right_camera_matrix, right_distortion_matrix, None, left_camera_matrix)
-        
-        
+        # right_opt_camera_matrix, validRightPixROI = cv2.getOptimalNewCameraMatrix(right_camera_matrix, 
+                                                                                # right_distortion_matrix, 
+                                                                                # (self._right_frame_.Shape[0],self._right_frame_.Shape[1]),
+                                                                                # 1,
+                                                                                # (self._right_frame_.Shape[0],self._right_frame_.Shape[1]))
+        return                                                                             
     
     def run_acquisition_loop(self) -> bool : 
         while True : 
@@ -197,6 +206,7 @@ class StereoRosWrapper(StereoUsbDriver) :
             self.right_info_topic = rospy.Publisher(right_cam_info_topic_name,CameraInfo,queue_size=1)
         
     def loop(self) :
+        print(" Usinq Image configuration : \n\t left : {} \n\t right : {}".format(self.left_cam_infos,self.right_cam_infos))
         rospy.init_node('StereoRosWrapper', anonymous=False)
         while not rospy.is_shutdown() : 
             if self.acquire_frame() :

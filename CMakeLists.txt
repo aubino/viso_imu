@@ -19,6 +19,12 @@ set(EIGEN3_INCLUDE_DIR "/usr/include/eigen3")
 set(Boost_USE_STATIC_LIBS   ON)
 set(Boost_USE_MULTITHREADED ON)
 
+find_package(catkin REQUIRED COMPONENTS
+    roscpp
+    rospy
+    sensor_msgs
+    std_msgs
+)
 find_package( OpenCV  )
 find_package(Boost REQUIRED program_options filesystem)
 find_package(Eigen3 )
@@ -30,7 +36,9 @@ add_definitions(${OpenCV_DEFINITIONS}
 
 include_directories( ${EIGEN3_INCLUDE_DIR} )
 include_directories(${Boost_INCLUDE_DIR})
-
+include_directories(
+    ${catkin_INCLUDE_DIRS}
+)
 include_directories( include 
     ${OpenCV_INCLUDE_DIRS}
     ${EIGEN3_INCLUDE_DIR}
@@ -50,8 +58,16 @@ target_link_libraries(viso_imu ${OpenCV_LIBRARIES} ${EIGEN3_LIBRARIES})
 
 target_link_libraries(viso_imu_test ${OpenCV_LIBRARIES} ${EIGEN3_LIBRARIES} ${Boost_LIBRARIES})
 
+
+
 # target_link_libraries(usb_stereo_launcher
 # ${OpenCV_LIBRARIES}
 # ${Boost_LIBRARIES})
 
-
+#############
+## Install ##
+#############
+# catkin_install_python(PROGRAMS
+    # scripts/usb_cam
+    # DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+# )
