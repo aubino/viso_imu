@@ -144,6 +144,8 @@ class StereoUsbDriver(object) :
         #Find rotation matrix and translation matrix from camera params to properly call stereoRectify (turns out i already have them)
         # call initUndistortRectifyMap to save undistorsion map (see https://docs.opencv.org/3.4/da/d54/group__imgproc__transform.html#ga7dfb72c9cf9780a347fbe3d1c47e5d5a)
         # see here https://learnopencv.com/depth-perception-using-stereo-camera-python-c/ as example
+        # see here https://github.com/whill-labs/gpu_stereo_image_proc for a gpu accelerated image processing 
+        # find more about libSGM algorithm for stereovision.
         return
     
     def undistort(self):
