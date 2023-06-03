@@ -19,12 +19,12 @@ set(EIGEN3_INCLUDE_DIR "/usr/include/eigen3")
 set(Boost_USE_STATIC_LIBS   ON)
 set(Boost_USE_MULTITHREADED ON)
 
-find_package(catkin REQUIRED COMPONENTS
-    roscpp
-    rospy
-    sensor_msgs
-    std_msgs
-)
+
+
+
+
+
+
 find_package( OpenCV  )
 find_package(Boost REQUIRED program_options filesystem)
 find_package(Eigen3 )
