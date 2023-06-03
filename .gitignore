@@ -1,1 +1,4 @@
 build/
+scripts/__pycache__/
+config/stereo_calib/circlegrid/.images
+config/stereo_calib/pinhole/.images

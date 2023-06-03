@@ -224,14 +224,18 @@ class StereoRosWrapper(StereoUsbDriver) :
         )
         left_topic_name = rospy.get_param('~/left_topic_name',"left_camera")
         right_topic_name = rospy.get_param('~/right_topic_name',"right_camera")
+        left_topic_rec_name = rospy.get_param('~/left_topic_rec_name',"left_camera_rec")
         left_cam_info_topic_name = rospy.get_param('~/left_cam_info_topic_name',"left_info")
         right_cam_info_topic_name = rospy.get_param('~/right_cam_info_topic_name',"right_info")
+        right_topic_rec_name = rospy.get_param('~/right_topic_rec_name',"right_camera_rec")
         self.left_image_topic = rospy.Publisher(left_topic_name,Image,queue_size=1)
         self.right_image_topic = rospy.Publisher(right_topic_name,Image,queue_size=1)
         if self.right_cam_infos is not None : 
             self.left_info_topic = rospy.Publisher(left_cam_info_topic_name,CameraInfo,queue_size=1)
+            self.left_rec_topic = rospy.Publisher(left_topic_rec_name,Image,queue_size=1)
         if self.left_cam_infos is not None :
             self.right_info_topic = rospy.Publisher(right_cam_info_topic_name,CameraInfo,queue_size=1)
+            self.right_rec_topic = rospy.Publisher(right_topic_rec_name,Image,queue_size=1)
         
     def loop(self) :
         print(" Usinq Image configuration : \n\t left : {} \n\t right : {}".format(self.left_cam_infos,self.right_cam_infos))
@@ -245,8 +249,10 @@ class StereoRosWrapper(StereoUsbDriver) :
                 self.right_image_topic.publish(self.rightImage)
                 if self.left_cam_infos is not None : 
                     self.left_info_topic.publish(self.left_cam_infos)
+                    self.left_rec_topic.publish(self.leftImageRec)
                 if self.right_cam_infos is not None :
                     self.right_info_topic.publish(self.right_cam_infos)
+                    self.right_rec_topic.publish(self.rightImageRec)
         rospy.logwarn_once("The acquisition loop has excited after request ")
 
 

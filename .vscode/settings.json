@@ -1,0 +1,37 @@
+{
+    "files.associations": {
+        "*.ipp": "cpp",
+        "bitset": "cpp"
+    },
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext",
+        "cpp",
+        "asciidoc"
+    ],
+
+    // This enables python language server. Seems to work slightly better than jedi:
+    "python.jediEnabled": false,
+
+    // Those paths are automatically filled by build system, see `repo.toml` for configuration:
+    "python.analysis.extraPaths": [
+        "/usr/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages",
+        "/home/aubin/.local/lib/python3.8/site-packages",
+        "/home/aubin/viso_imu/scripts/"
+],
+
+    "python.languageServer": "Pylance",
+    "python.defaultInterpreterPath": "/usr/bin/python3",
+    "cSpell.words": [
+        "rospy",
+        "undistort",
+        "undistortion"
+    ],
+    "python.autoComplete.extraPaths": [
+        "/opt/ros/noetic/lib/python3/dist-packages",
+        "/home/aubin/.local/lib/python3.8/site-packages",
+        "/home/aubin/viso_imu/scripts"
+    ],
+}
