@@ -98,6 +98,7 @@ class StereoUsbDriver(object) :
                     print("Left Intrinsics : ",self.left_cam_infos)
                     print("")
                     print("Right intrinsics : ",self.right_cam_infos)
+                    self.compute_maps()
             StereoUsbDriver.__instances__.append(self)
         return
         
@@ -107,9 +108,15 @@ class StereoUsbDriver(object) :
             height ,width, channels = original.shape
             self._left_frame_ = original[0:height,0:int(width/2)]
             self._right_frame_ = original[0:height,int(width/2):(width)]
+            if self.left_cam_infos is not None and self.right_cam_infos is not None :
+                self.undistort()
             if self.debug : 
                 cv2.imshow("Left Image ",self._left_frame_)
                 cv2.imshow("Right Frame",self._right_frame_)
+                if self.left_cam_infos is not None and self.right_cam_infos is not None :
+                    cv2.imshow("Left Image Rectified ",self._left_frame_rec)
+                    cv2.imshow("Right Frame Rectified ",self._right_frame_rec)                   
+                
             cv2.waitKey(1)
             return True
         else :
@@ -122,43 +129,62 @@ class StereoUsbDriver(object) :
         self.rightImage = self.__bridge__.cv2_to_imgmsg(self._right_frame_,encoding='bgr8',header=Header(frame_id= "stereo/right_frame"))
         if (
             (self.left_cam_infos is None) or (self.right_cam_infos is None)
-        ) and self.verbose:
-            print("No Parameters have been given as camera parameters.")
+        ) :
+            if self.verbose:
+                print("No Parameters have been given as camera parameters.")
+        else :
+            self.leftImageRec = self.__bridge__.cv2_to_imgmsg(self._left_frame_rec,encoding='bgr8' ,header=Header(frame_id= "stereo/left_frame"))
+            self.rightImageRec = self.__bridge__.cv2_to_imgmsg(self._right_frame_rec,encoding='bgr8',header=Header(frame_id= "stereo/right_frame"))
     
-    def compute_maps(self):
+    def rosInfoToArray(self) :
+        """A function to turn CameraInfos into numpy arrays.
+        Returns: K_left,D_left,R_left,P_left, K_right,D_right,R_right,P_right
+
+        Returns:
+            _type_: _description_
+        """
         left_camera_matrix = np.array([[self.left_cam_infos.K[0],self.left_cam_infos.K[1],self.left_cam_infos.K[2]],
                                             [self.left_cam_infos.K[3],self.left_cam_infos.K[4],self.left_cam_infos.K[5]],
                                             [self.left_cam_infos.K[6],self.left_cam_infos.K[7],self.left_cam_infos.K[8]]])
         left_distortion_matrix = np.array([list(self.left_cam_infos.D)])
+        left_projection_matrix = np.array([[self.left_cam_infos.P[0],self.left_cam_infos.P[1],self.left_cam_infos.P[2],self.left_cam_infos.P[3]],
+                                            [self.left_cam_infos.P[4],self.left_cam_infos.P[5],self.left_cam_infos.P[6],self.left_cam_infos.P[7]],
+                                            [self.left_cam_infos.P[8],self.left_cam_infos.P[9],self.left_cam_infos.P[10],self.left_cam_infos.P[11]]])
+        left_rectification_matrix = np.array([[self.left_cam_infos.R[0],self.left_cam_infos.R[1],self.left_cam_infos.R[2]],
+                                            [self.left_cam_infos.R[3],self.left_cam_infos.R[4],self.left_cam_infos.R[5]],
+                                            [self.left_cam_infos.R[6],self.left_cam_infos.R[7],self.left_cam_infos.R[8]]])
+        
         right_camera_matrix = np.array([[self.right_cam_infos.K[0],self.right_cam_infos.K[1],self.right_cam_infos.K[2]],
                                             [self.right_cam_infos.K[3],self.right_cam_infos.K[4],self.right_cam_infos.K[5]],
                                             [self.right_cam_infos.K[6],self.right_cam_infos.K[7],self.right_cam_infos.K[8]]])
         right_distortion_matrix = np.array([list(self.right_cam_infos.D)])
-        R1, R2, P1, P2, Q, validPixROI1, validPixROI2 = cv2.stereoRectify(left_camera_matrix,
-                                                                            left_distortion_matrix,
-                                                                            right_camera_matrix,
-                                                                            right_distortion_matrix,
-                                                                            (left_camera_matrix.Shape[0],left_camera_matrix.Shape[1]),
-                                                                            )
+        right_projection_matrix =  np.array([[self.right_cam_infos.P[0],self.right_cam_infos.P[1],self.right_cam_infos.P[2],self.right_cam_infos.P[3]],
+                                            [self.right_cam_infos.P[4],self.right_cam_infos.P[5],self.right_cam_infos.P[6],self.right_cam_infos.P[7]],
+                                            [self.right_cam_infos.P[8],self.right_cam_infos.P[9],self.right_cam_infos.P[10],self.right_cam_infos.P[11]]])
+        right_rectification_matrix = np.array([[self.right_cam_infos.R[0],self.right_cam_infos.R[1],self.right_cam_infos.R[2]],
+                                            [self.right_cam_infos.R[3],self.right_cam_infos.R[4],self.right_cam_infos.R[5]],
+                                            [self.right_cam_infos.R[6],self.right_cam_infos.R[7],self.right_cam_infos.R[8]]])
+        return left_camera_matrix, left_distortion_matrix,left_rectification_matrix,left_projection_matrix,right_camera_matrix,right_distortion_matrix,right_rectification_matrix,right_projection_matrix
+    
+    def compute_maps(self):
+        #Turn camera matrixes into np arrays
+        left_camera_matrix, left_distortion_matrix,left_rectification_matrix,left_projection_matrix,right_camera_matrix,right_distortion_matrix,right_rectification_matrix,right_projection_matrix = self.rosInfoToArray()
+        left_rectification_map_x,left_rectification_map_y = cv2.initUndistortRectifyMap(left_camera_matrix,left_distortion_matrix,left_rectification_matrix,left_projection_matrix,(self.left_cam_infos.width,self.left_cam_infos.height),cv2.CV_32FC1)
+        right_rectification_map_x,right_rectification_map_y = cv2.initUndistortRectifyMap(right_camera_matrix,right_distortion_matrix,right_rectification_matrix,right_projection_matrix,(self.right_cam_infos.width,self.right_cam_infos.height),cv2.CV_32FC1)
+
         #TODO
         #Find rotation matrix and translation matrix from camera params to properly call stereoRectify (turns out i already have them)
         # call initUndistortRectifyMap to save undistorsion map (see https://docs.opencv.org/3.4/da/d54/group__imgproc__transform.html#ga7dfb72c9cf9780a347fbe3d1c47e5d5a)
         # see here https://learnopencv.com/depth-perception-using-stereo-camera-python-c/ as example
         # see here https://github.com/whill-labs/gpu_stereo_image_proc for a gpu accelerated image processing 
         # find more about libSGM algorithm for stereovision.
-        return
+        self.rightRectMap = (right_rectification_map_x,right_rectification_map_y)
+        self.leftRectMap = (left_rectification_map_x,left_rectification_map_y)
+        return 
     
     def undistort(self):
-        # left_opt_camera_matrix, validLeftPixROI = cv2.getOptimalNewCameraMatrix(left_camera_matrix, 
-                                                                                # left_distortion_matrix, 
-                                                                                # (self._left_frame_.Shape[0],self._left_frame_.Shape[1]),
-                                                                                # 1,
-                                                                                # (self._left_frame_.Shape[0],self._left_frame_.Shape[1]))
-        # right_opt_camera_matrix, validRightPixROI = cv2.getOptimalNewCameraMatrix(right_camera_matrix, 
-                                                                                # right_distortion_matrix, 
-                                                                                # (self._right_frame_.Shape[0],self._right_frame_.Shape[1]),
-                                                                                # 1,
-                                                                                # (self._right_frame_.Shape[0],self._right_frame_.Shape[1]))
+        self._left_frame_rec = cv2.remap(self._left_frame_,self.leftRectMap[0],self.leftRectMap[1],cv2.INTER_LANCZOS4,cv2.BORDER_CONSTANT,0)
+        self._right_frame_rec = cv2.remap(self._right_frame_,self.rightRectMap[0],self.rightRectMap[1],cv2.INTER_LANCZOS4,cv2.BORDER_CONSTANT,0)
         return                                                                             
     
     def run_acquisition_loop(self) -> bool : 
