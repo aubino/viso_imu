@@ -13,7 +13,8 @@
 
 ### Compilation instrunctions
 ````bash
-git clone https://github.com/aubino/viso_imu.git 
+git clone https://github.com/aubino/viso_imu.git
+cd viso_imu
 mkdir build
 cd build 
 cmake ..
