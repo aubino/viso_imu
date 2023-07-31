@@ -84,21 +84,22 @@ int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool
     std::stringstream ss ;
     ss<< "/dev/video";
     ss<< usb_channel;
-    cv::VideoCapture capture_interface(ss.str(),cv::CAP_V4L);
+    cv::VideoCapture capture_interface(ss.str(),cv::CAP_ANY);
     
     try 
     {
         fps = RES_FPS_MAP.at(ressource->resolution) ;
     }   
     
-    catch (const std::out_of_range exception)
+    catch (std::out_of_range const& exception)
     {
+        ressource->resolution = RESOLUTION(640,240) ; 
         if(verbose)
             std::cout<<"The resolution for is not registered in the vendor database. Falling back to 60 fps with resolution "<< ressource->resolution.width <<" x "<< ressource->resolution.heigh<<std::endl;
         fps = 60;
     }
 
-    capture_interface.set(cv::CAP_PROP_FPS,fps);
+    // capture_interface.set(cv::CAP_PROP_FPS,fps);
     capture_interface.set(cv::CAP_PROP_FRAME_WIDTH,ressource->resolution.width);
     capture_interface.set(cv::CAP_PROP_FRAME_HEIGHT,ressource->resolution.heigh);
     
@@ -115,13 +116,13 @@ int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool
             for(int i =0; i<captured_image.size().width/2 ; i++ )
             {
                 for(int j = 0; j<captured_image.size().height ; j++)
-                    half_left.at<uchar>(i,j) = captured_image.at<uchar>(i,j); 
+                    half_left.at<uchar>(j,i) = captured_image.at<uchar>(j,i); 
             }
 
             for(int i(captured_image.size().width/2) ; i< captured_image.size().width; i++)
             {
                 for(int j = 0; j<captured_image.size().height ; j++)
-                    half_right.at<uchar>(i,j) = captured_image.at<uchar>(i,j) ;
+                    half_right.at<uchar>(j, int(i-captured_image.size().width/2)) = captured_image.at<uchar>(j,i) ;
             }
 
             if(undistord)
@@ -133,7 +134,7 @@ int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool
                 half_right = distorsion_buffer ;
             }
 
-            if(ressource->setLeft(ImageStamped(time(NULL),half_left)) && ressource->setRight(ImageStamped(time(NULL),half_right)))
+            if(ressource->setLeft(ImageStamped(time(0),half_left)) && ressource->setRight(ImageStamped(time(0),half_right)))
             {
                 if(debug)
                     std::cout<<"The images have been transfered and saved to mutex ressource"<<std::endl;
@@ -152,7 +153,6 @@ int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool
                 std::cout<<"The Image could not be red. Tips : check the connection port of hardware connection"<<std::endl;
         cv::waitKey(5);
     }
-    
     capture_interface.release();
     cv::destroyAllWindows();
     return 0 ;

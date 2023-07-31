@@ -26,12 +26,12 @@ class CameraParams
                     fs["camera_matrix"]>>intrinsics;
                     fs["distortion_coefficients"]>>distorsion;
                     fs["projection_matrix"] >> projection_matrix ;
-                    resolution = RESOLUTION(fs["image_width"],fs["image_height"]);
+                    resolution = RESOLUTION(int(fs["image_width"]),int(fs["image_height"]));
                     return true ;
                 }
                 return false ;
             }
-            catch (const std::out_of_range exception)
+            catch (std::out_of_range const& exception)
             {
                 return false ;
             }

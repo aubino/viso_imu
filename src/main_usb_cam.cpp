@@ -7,8 +7,8 @@ int main(int argc,char** argv)
 {
     po::options_description desc("Mandatory options");
     int channel;
-    int width = 240;
-    int heigh = 380;
+    int width = 640;
+    int heigh = 240;
     bool debug = false;
     bool verbose = false;
     bool undistord = false ; 
@@ -58,5 +58,5 @@ int main(int argc,char** argv)
     std::cout<<"|   Verbose Option      |               "<<verbose<<"           |"<<std::endl;
     std::cout<<"===================================================="<<std::endl;
     StereoImageRessource ressource = std::make_shared<StereoImage>(RESOLUTION(width,heigh));
-    return stereoUsbCaptureThread(0,ressource,undistord,verbose,debug);
+    return stereoUsbCaptureThread(channel,ressource,undistord,verbose,debug);
 }

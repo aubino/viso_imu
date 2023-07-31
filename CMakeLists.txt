@@ -9,7 +9,7 @@ set(CMAKE_HAVE_THREADS_LIBRARY 1)
 set(CMAKE_USE_WIN32_THREADS_INIT 0)
 set(CMAKE_USE_PTHREADS_INIT 1)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
-#######################Debug options ##########################
+####################### Debug options ##########################
 set(CMAKE_BUILD_TYPE  Debug)
 
 add_compile_options(-std=c++17 -Wall -lm  -lboost_program_options)
@@ -49,8 +49,11 @@ add_executable(usb_stereo_launcher src/usb_stereo.cpp src/main_usb_cam.cpp)
 add_executable(viso_imu src/detector.cpp src/ICM20948.cpp src/imu.cpp src/main_inception.cpp src/matcher.cpp src/transform_computer.cpp)
 add_executable(viso_imu_test src/detector.cpp src/ICM20948.cpp src/imu.cpp src/main_unitary_test.cpp src/matcher.cpp src/transform_computer.cpp)
 add_executable(simple_camera src/simple_camera.cpp)
+add_executable(test_usb_cam src/test_usb_cam)
 
 target_link_libraries(simple_camera ${OpenCV_LIBRARIES})
+
+target_link_libraries(test_usb_cam ${OpenCV_LIBRARIES})
 
 target_link_libraries(usb_stereo_launcher ${Boost_LIBRARIES} ${OpenCV_LIBRARIES})
 

@@ -37,11 +37,14 @@ class StereoImage
     private :
         ImageStamped left;
         ImageStamped right;
-     
 };
 
 using StereoImageRessource = std::shared_ptr<StereoImage> ;
 
-const std::map<RESOLUTION,float> RES_FPS_MAP({{RESOLUTION(10,20),10},{RESOLUTION(20,30),60}}); //TODO Take the good values from vendor and put theme here
+
+const std::map<RESOLUTION,float> RES_FPS_MAP({{RESOLUTION(640,240),60},
+                                            {RESOLUTION(1280,480),60},
+                                            {RESOLUTION(2560,720),60},
+                                            {RESOLUTION(2560,960),60}});
 
 int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool undistord = false, bool verbose = false,bool debug = false);

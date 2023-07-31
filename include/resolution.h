@@ -4,14 +4,14 @@
 typedef struct RESOLUTION
 {
     public : 
-        int heigh= 0,width = 0;
+        uint heigh = 0,width = 0;
         RESOLUTION()
         {
-            heigh = 240 ;
-            width = 380 ;
+            heigh = 480 ;
+            width = 640 ;
         }
         
-        RESOLUTION(int w,int h)
+        RESOLUTION(uint w,uint h)
         {
             heigh = h;
             width = w;
@@ -19,7 +19,7 @@ typedef struct RESOLUTION
         
         bool operator <(const RESOLUTION& r1) const 
         {
-            return sqrt(this->heigh*this->heigh + this->width*this->width) < sqrt(r1.heigh*r1.heigh + r1.width*r1.width);
+            return this->heigh*this->width  <  r1.heigh*r1.width ;
         } 
 
 } RESOLUTION ;

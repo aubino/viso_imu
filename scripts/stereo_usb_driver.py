@@ -98,6 +98,7 @@ class StereoUsbDriver(object) :
                     print("Left Intrinsics : ",self.left_cam_infos)
                     print("")
                     print("Right intrinsics : ",self.right_cam_infos)
+                if success: 
                     self.compute_maps()
             StereoUsbDriver.__instances__.append(self)
         return
@@ -222,11 +223,11 @@ class StereoRosWrapper(StereoUsbDriver) :
         super().__init__(
             channel, resolution, left_cfg, right_cfg, undistort, _verbose, _debug
         )
-        left_topic_name = rospy.get_param('~/left_topic_name',"left_camera")
-        right_topic_name = rospy.get_param('~/right_topic_name',"right_camera")
+        left_topic_name = rospy.get_param('~/left_topic_name',"/stereo/left/image_raw")
+        right_topic_name = rospy.get_param('~/right_topic_name',"/stereo/right/image_raw")
         left_topic_rec_name = rospy.get_param('~/left_topic_rec_name',"left_camera_rec")
-        left_cam_info_topic_name = rospy.get_param('~/left_cam_info_topic_name',"left_info")
-        right_cam_info_topic_name = rospy.get_param('~/right_cam_info_topic_name',"right_info")
+        left_cam_info_topic_name = rospy.get_param('~/left_cam_info_topic_name',"/stereo/left/camera_info")
+        right_cam_info_topic_name = rospy.get_param('~/right_cam_info_topic_name',"/stereo/right/camera_info")
         right_topic_rec_name = rospy.get_param('~/right_topic_rec_name',"right_camera_rec")
         self.left_image_topic = rospy.Publisher(left_topic_name,Image,queue_size=1)
         self.right_image_topic = rospy.Publisher(right_topic_name,Image,queue_size=1)
