@@ -12,11 +12,14 @@
 
 
 ### Compilation instrunctions
-`git clone https://github.com/aubino/viso_imu.git` 
-`mkdir build`
-`cd build`  
-`cmake ..`
-`make -j4`  
+````bash
+git clone https://github.com/aubino/viso_imu.git
+cd viso_imu
+mkdir build
+cd build 
+cmake ..
+make -j4
+````  
 
 ### Execution instrunctions and option
 - Executable :   viso_imu __the visual odometry calculator__ . 
