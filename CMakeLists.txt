@@ -45,7 +45,7 @@ include_directories( include
     )
 
 add_executable(imu_test src/ICM20948.cpp src/main.cpp)
-add_executable(usb_stereo_launcher src/usb_stereo.cpp src/main_usb_cam.cpp)
+add_executable(usb_stereo_launcher src/usb_stereo.cpp  src/cloud_computer.cpp src/main_usb_cam.cpp)
 add_executable(viso_imu src/detector.cpp src/ICM20948.cpp src/imu.cpp src/main_inception.cpp src/matcher.cpp src/transform_computer.cpp)
 add_executable(viso_imu_test src/detector.cpp src/ICM20948.cpp src/imu.cpp src/main_unitary_test.cpp src/matcher.cpp src/transform_computer.cpp)
 add_executable(simple_camera src/simple_camera.cpp)

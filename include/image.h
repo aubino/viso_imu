@@ -1,3 +1,5 @@
+#ifndef IMAGE_H
+#define IMAGE_H
 #include <opencv4/opencv2/opencv.hpp>
 #include <time.h>
 class ImageStamped
@@ -16,3 +18,4 @@ class ImageStamped
         t = T; 
     };
 };
+#endif

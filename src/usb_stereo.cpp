@@ -10,6 +10,9 @@ void signal_callback_handler(int signum)
 StereoImage::StereoImage(RESOLUTION res)
 {
     resolution = res;
+    left_params.resolution.width = res.width/2 ; 
+    left_params.resolution.heigh = res.heigh ;
+    right_params = left_params ; 
     return;
 }
 
@@ -17,7 +20,15 @@ StereoImage::StereoImage(CameraParams lp, CameraParams rp)
 {
     left_params = lp;
     right_params = rp;
-    resolution = lp.resolution ;
+    resolution = RESOLUTION(lp.resolution.width*2,lp.resolution.heigh) ; 
+}
+
+StereoImage::StereoImage(std::string left_file, std::string right_file)
+{
+    left_params = CameraParams(left_file) ; 
+    right_params = CameraParams(right_file) ;
+    left_params.load() ; 
+    right_params.load() ; 
 }
 
 std::pair<ImageStamped,ImageStamped> StereoImage::getImages()
@@ -75,8 +86,25 @@ bool StereoImage::setRight(const ImageStamped& image)
     return false ;  
 }
 
+bool StereoImage::rectifyImages(std::pair<ImageStamped,ImageStamped>& rectified_image)
+{
+    if( left_params.getRectificationMatrix().size().width > 0  &&  
+        left_params.getRectificationMatrix().size().height > 0 &&
+        right_params.getRectificationMatrix().size().width > 0 &&
+        right_params.getRectificationMatrix().size().height > 0)
+    {
+        cv::remap(left.image,rectified_image.first.image,left_params.rectification_map_x,left_params.rectification_map_y,cv::INTER_LINEAR , cv::BORDER_DEFAULT) ;
+        cv::remap(right.image,rectified_image.second.image,right_params.rectification_map_x,right_params.rectification_map_y,cv::INTER_LINEAR , cv::BORDER_DEFAULT) ;
+        rectified_image.first.t = left.t ; 
+        rectified_image.second.t = right.t ; 
+        return true ; 
+    }
+    return false ; 
+}
 
-int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool undistord,bool verbose ,bool debug)
+
+
+int stereoUsbCaptureThread(int usb_channel,StereoImageRessource ressource, bool undistord,bool verbose ,bool debug)
 {
     signal(SIGINT,signal_callback_handler);
     signal(SIGTERM,signal_callback_handler);
@@ -95,7 +123,7 @@ int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool
     {
         ressource->resolution = RESOLUTION(640,240) ; 
         if(verbose)
-            std::cout<<"The resolution for is not registered in the vendor database. Falling back to 60 fps with resolution "<< ressource->resolution.width <<" x "<< ressource->resolution.heigh<<std::endl;
+            std::cout<<"The  resolution you aked for  is not registered in the vendor database. Falling back to 60 fps with resolution "<< ressource->resolution.width <<" x "<< ressource->resolution.heigh<<std::endl;
         fps = 60;
     }
 
@@ -136,7 +164,7 @@ int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool
 
             if(ressource->setLeft(ImageStamped(time(0),half_left)) && ressource->setRight(ImageStamped(time(0),half_right)))
             {
-                if(debug)
+                if(verbose)
                     std::cout<<"The images have been transfered and saved to mutex ressource"<<std::endl;
             }
         
@@ -147,7 +175,6 @@ int stereoUsbCaptureThread(int usb_channel,StereoImageRessource& ressource, bool
             }
         
         }
-        
         else
             if(debug)   
                 std::cout<<"The Image could not be red. Tips : check the connection port of hardware connection"<<std::endl;

@@ -53,7 +53,7 @@ bool compute_transform(const cv::Mat& img1, const cv::Mat& img2,cv::Mat cameraMa
         cv::Mat mask;
         Essential =  cv::findEssentialMat(points_pairs.first, points_pairs.second,cameraMatrix,cv::RANSAC,0.999, 1,mask);
         #ifdef DEBUG 
-            std::cout<<"Essential materix is " << Essential << std::endl;
+            std::cout<<"Essential matrix is " << Essential << std::endl;
         #endif
         cv::recoverPose(Essential,points_pairs.first,points_pairs.second,cameraMatrix,R,t,InfThresh, inliers,points);
         return true;

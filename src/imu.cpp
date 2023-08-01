@@ -19,7 +19,6 @@ Imu::Imu(std::string imu_name,time_t start_time) :
             state_vector[i]= 0;
             bias_vector[i]= 0;
         }
-           
     }
 
 Imu::Imu(std::string imu_name) : 

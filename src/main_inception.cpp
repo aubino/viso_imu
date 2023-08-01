@@ -164,9 +164,7 @@ void imu_tread(double period)
                 std::cout<<"Translation part : "<<NEWP<<std::endl;
                 std::this_thread::sleep_for (std::chrono::milliseconds(slp_for));
             }
-            
         }
-         
     }
 }
 

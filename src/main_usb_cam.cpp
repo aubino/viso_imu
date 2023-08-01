@@ -1,6 +1,8 @@
 #include "usb_stereo.h"
 #include <boost/program_options.hpp>
 #include <memory>
+#include "cloud_computer.hpp"
+
 namespace po = boost::program_options;
 
 int main(int argc,char** argv)
@@ -58,5 +60,7 @@ int main(int argc,char** argv)
     std::cout<<"|   Verbose Option      |               "<<verbose<<"           |"<<std::endl;
     std::cout<<"===================================================="<<std::endl;
     StereoImageRessource ressource = std::make_shared<StereoImage>(RESOLUTION(width,heigh));
+    RGBDRessource rgbd_ressource = std::make_shared<RGBD_ImageStamped>() ; 
+    stereoCloudComputingThread(ressource,rgbd_ressource) ; 
     return stereoUsbCaptureThread(channel,ressource,undistord,verbose,debug);
 }

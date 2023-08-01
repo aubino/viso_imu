@@ -22,7 +22,7 @@ std::pair<std::vector<cv::Point2f>,std::vector<cv::Point2f>> match_images(const 
     result.second= points2; 
     }
     std::cout<<"Could not find any key point"<<std::endl; 
-  return result;
+    return result;
 }
 
 #ifdef DEBUG 
