@@ -153,13 +153,19 @@ int stereoUsbCaptureThread(int usb_channel,StereoImageRessource ressource, bool 
                     half_right.at<uchar>(j, int(i-captured_image.size().width/2)) = captured_image.at<uchar>(j,i) ;
             }
 
-            if(undistord)
+            // if(undistord)
+            // {
+                // cv::Mat distorsion_buffer ; 
+                // cv::undistort(half_left,distorsion_buffer,ressource->left_params.getCameraMatrix(),ressource->left_params.getDistorsion());
+                // half_left = distorsion_buffer ;
+                // cv::undistort(half_right,distorsion_buffer,ressource->right_params.getCameraMatrix(),ressource->right_params.getDistorsion());
+                // half_right = distorsion_buffer ;
+            // }
+
+            if(debug)
             {
-                cv::Mat distorsion_buffer ; 
-                cv::undistort(half_left,distorsion_buffer,ressource->left_params.getCameraMatrix(),ressource->left_params.getDistorsion());
-                half_left = distorsion_buffer ;
-                cv::undistort(half_right,distorsion_buffer,ressource->right_params.getCameraMatrix(),ressource->right_params.getDistorsion());
-                half_right = distorsion_buffer ;
+                cv::imshow("Stereo camera left Image",ressource->getLeft().image);
+                cv::imshow("Stereo camera right Image",ressource->getRight().image);
             }
 
             if(ressource->setLeft(ImageStamped(time(0),half_left)) && ressource->setRight(ImageStamped(time(0),half_right)))
