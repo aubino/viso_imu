@@ -104,7 +104,7 @@ bool StereoImage::rectifyImages(std::pair<ImageStamped,ImageStamped>& rectified_
 
 
 
-int stereoUsbCaptureThread(int usb_channel,StereoImageRessource ressource, bool undistord,bool verbose ,bool debug)
+void stereoUsbCaptureThread(int usb_channel,StereoImageRessource ressource, bool undistord,bool verbose ,bool debug)
 {
     signal(SIGINT,signal_callback_handler);
     signal(SIGTERM,signal_callback_handler);
@@ -188,5 +188,5 @@ int stereoUsbCaptureThread(int usb_channel,StereoImageRessource ressource, bool 
     }
     capture_interface.release();
     cv::destroyAllWindows();
-    return 0 ;
+    return  ;
 }

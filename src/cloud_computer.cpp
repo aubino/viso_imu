@@ -2,7 +2,7 @@
 #include <condition_variable>
 #include <atomic>
 
-int stereoCloudComputingThread(const StereoImageRessource& stereo_image , const RGBDRessource& rgbd, bool debug , bool verbose ) 
+void stereoCloudComputingThread(StereoImageRessource stereo_image , RGBDRessource rgbd, bool debug , bool verbose ) 
 {
     cv::Ptr<cv::StereoSGBM> stereo_bm_object  = cv::StereoSGBM::create( 0,
                                                                         8,
@@ -34,7 +34,7 @@ int stereoCloudComputingThread(const StereoImageRessource& stereo_image , const 
         rgbd->disparity_map = calculated_disparity ; 
         rgbd->cloud = cloudImage ; 
     }
-    return -1 ;
+    return ;
 }
 
 cv::Mat disparity_to_map_matrix(cv::Mat P1, cv::Mat P2) 

@@ -51,6 +51,6 @@ const std::map<RESOLUTION,float> RES_FPS_MAP({{RESOLUTION(640,240),60},
                                             {RESOLUTION(2560,720),60},
                                             {RESOLUTION(2560,960),60}});
 
-int stereoUsbCaptureThread(int usb_channel,StereoImageRessource ressource, bool undistord = false, bool verbose = false,bool debug = false);
+void stereoUsbCaptureThread(int usb_channel,StereoImageRessource ressource, bool undistord = false, bool verbose = false,bool debug = false);
 
 #endif

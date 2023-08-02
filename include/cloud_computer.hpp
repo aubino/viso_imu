@@ -33,6 +33,6 @@ using RGBDRessource = std::shared_ptr<RGBD_ImageStamped> ;
 /// @return 4×4  disparity-to-depth mapping matrix 
 cv::Mat disparity_to_map_matrix(cv::Mat P1, cv::Mat P2) ; 
 
-int stereoCloudComputingThread(const StereoImageRessource& stereo_image , const RGBDRessource& rgbd, bool debug = false, bool verbose = false) ;
+void stereoCloudComputingThread(StereoImageRessource stereo_image , RGBDRessource rgbd, bool debug = false, bool verbose = false) ;
 
 #endif
