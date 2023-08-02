@@ -10,19 +10,20 @@ int main(int argc,char** argv)
 {
     po::options_description desc("Mandatory options");
     int channel;
-    int width = 640;
-    int heigh = 240;
     bool debug = false;
     bool verbose = false;
-    bool undistord = false ; 
+    std::string left_path  ; 
+    std::string right_path ;
+    StereoImageRessource stereo_ressource ; 
+    RGBDRessource rgbd_ressource ;
     desc.add_options ()
     ("help,h","This executable launches the usb stereo camera driver  ")
-    ("channel,c",boost::program_options::value<int>(),"The topic on which the program will find camera infos. Mandatory option")
-    ("undistord,u",boost::program_options::value<bool>(),"Whether to undistord the raw image or not. Optional argument")
+    ("channel,c",boost::program_options::value<int>(),"The usb channel of the stereo camera. Mandatory option")
+    ("left_params,l",boost::program_options::value<std::string>(),"The parameters file of the left camera obtained from calibration. Absolute path . Mandatory option")
+    ("right_params,r",boost::program_options::value<std::string>(),"The parameters file of the right camera obtained from calibration . Absolute path . Mandatory option")
     ("debug,D",boost::program_options::value<bool>(),"Whether to show debug options and logs or not. Optional argument")
-    ("verbose,v",boost::program_options::value<bool>(),"Allow verbose logs or not . Optional argument")
-    ("Width,W",boost::program_options::value<int>(),"width of the image . Optional argument")
-    ("Heigh,H",boost::program_options::value<int>(),"Heigh of the image . Optional argument");
+    ("verbose,v",boost::program_options::value<bool>(),"Allow verbose logs or not . Optional argument") ; 
+
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
@@ -39,32 +40,33 @@ int main(int argc,char** argv)
             debug = vm["debug"].as<bool>();
         if(vm.count("verbose"))
             verbose = vm["verbose"].as<bool>();
-        if(vm.count("Width"))
-            width = vm["Width"].as<int>();
-        if(vm.count("Heigh"))
-            heigh = vm["Heigh"].as<int>();
+        if(vm.count("left_params")) 
+            left_path = vm["left_params"].as<std::string>() ; 
+        if(vm.count("right_params")) 
+            right_path = vm["right_params"].as<std::string>() ;
 
     }
+    stereo_ressource = std::make_shared<StereoImage>(left_path,right_path);
+    rgbd_ressource = std::make_shared<RGBD_ImageStamped>() ; 
+
     std::cout<<"===================================================="<<std::endl;
     std::cout<<"|               Used arguments summary              |"<<std::endl;
     std::cout<<"|---------------------------------------------------|"<<std::endl;
     std::cout<<"|   Videoport Number    |             "<<channel<<"             |"<<std::endl;
     std::cout<<"|---------------------------------------------------|"<<std::endl;
-    std::cout<<"|   Frame Width         |             "<<width<<"           |"<<std::endl;
+    std::cout<<"|   Left frame params   |         "<<left_path<<"           |"<<std::endl;
     std::cout<<"|---------------------------------------------------|"<<std::endl;
-    std::cout<<"|   Frame Heigh         |             "<<heigh<<"           |"<<std::endl;
-    std::cout<<"|---------------------------------------------------|"<<std::endl;
-    std::cout<<"|   Undistord Option    |               "<<undistord<<"           |"<<std::endl;
+    std::cout<<"|   Right frame params  |         "<<right_path<<"           |"<<std::endl;
     std::cout<<"|---------------------------------------------------|"<<std::endl;
     std::cout<<"|   Debug Option        |               "<<debug<<"           |"<<std::endl;
     std::cout<<"|---------------------------------------------------|"<<std::endl;
     std::cout<<"|   Verbose Option      |               "<<verbose<<"           |"<<std::endl;
     std::cout<<"===================================================="<<std::endl;
-    StereoImageRessource stereo_ressource = std::make_shared<StereoImage>(RESOLUTION(width,heigh));
-    RGBDRessource rgbd_ressource = std::make_shared<RGBD_ImageStamped>() ; 
-    std::thread stereo_aquisition(stereoUsbCaptureThread,channel,stereo_ressource,undistord,verbose,debug) ; 
-    std::thread cloud_computer(stereoCloudComputingThread,stereo_ressource,rgbd_ressource,debug,verbose) ; 
-    stereo_aquisition.join() ; 
-    cloud_computer.join() ; 
-    return EXIT_SUCCESS ; 
+    // std::thread stereo_aquisition(stereoUsbCaptureThread,channel,stereo_ressource,undistord,verbose,debug) ; 
+    // std::thread cloud_computer(stereoCloudComputingThread,stereo_ressource,rgbd_ressource,debug,verbose) ; 
+    // stereo_aquisition.join() ; 
+    // cloud_computer.join() ; 
+    // return EXIT_SUCCESS ; 
+    stereoUsbCaptureThread(channel,stereo_ressource,verbose,debug) ; 
+    return EXIT_SUCCESS  ;
 }

@@ -104,7 +104,7 @@ bool StereoImage::rectifyImages(std::pair<ImageStamped,ImageStamped>& rectified_
 
 
 
-void stereoUsbCaptureThread(int usb_channel,StereoImageRessource ressource, bool undistord,bool verbose ,bool debug)
+void stereoUsbCaptureThread(int usb_channel,StereoImageRessource ressource,bool verbose ,bool debug)
 {
     signal(SIGINT,signal_callback_handler);
     signal(SIGTERM,signal_callback_handler);
@@ -113,6 +113,11 @@ void stereoUsbCaptureThread(int usb_channel,StereoImageRessource ressource, bool
     ss<< "/dev/video";
     ss<< usb_channel;
     cv::VideoCapture capture_interface(ss.str(),cv::CAP_ANY);
+    while (!capture_interface.isOpened())
+    {
+        std::cout<<"Waiting for capture interface to be ready"<<std::endl ; 
+    }
+    
     
     try 
     {
@@ -137,35 +142,44 @@ void stereoUsbCaptureThread(int usb_channel,StereoImageRessource ressource, bool
         if(capture_interface.read(captured_image))
         {
             if(debug)
-                cv::imshow("Stereo camera raw output",captured_image);
+            {
+                try
+                {
+                    cv::imshow("Stereo camera raw output",captured_image);
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                }
+            }
+                
             cv::Mat half_left(captured_image.size().height,int(captured_image.size().width/2),CV_8UC3),
             half_right(captured_image.size().height,int(captured_image.size().width/2),CV_8UC3); 
             
             for(int i =0; i<captured_image.size().width/2 ; i++ )
             {
                 for(int j = 0; j<captured_image.size().height ; j++)
-                    half_left.at<uchar>(j,i) = captured_image.at<uchar>(j,i); 
+                    half_left.at<cv::Vec3b>(j,i) = captured_image.at<cv::Vec3b>(j,i); 
             }
 
             for(int i(captured_image.size().width/2) ; i< captured_image.size().width; i++)
             {
                 for(int j = 0; j<captured_image.size().height ; j++)
-                    half_right.at<uchar>(j, int(i-captured_image.size().width/2)) = captured_image.at<uchar>(j,i) ;
+                    half_right.at<cv::Vec3b>(j, int(i-captured_image.size().width/2)) = captured_image.at<cv::Vec3b>(j,i) ;
             }
-
-            // if(undistord)
-            // {
-                // cv::Mat distorsion_buffer ; 
-                // cv::undistort(half_left,distorsion_buffer,ressource->left_params.getCameraMatrix(),ressource->left_params.getDistorsion());
-                // half_left = distorsion_buffer ;
-                // cv::undistort(half_right,distorsion_buffer,ressource->right_params.getCameraMatrix(),ressource->right_params.getDistorsion());
-                // half_right = distorsion_buffer ;
-            // }
 
             if(debug)
             {
-                cv::imshow("Stereo camera left Image",ressource->getLeft().image);
-                cv::imshow("Stereo camera right Image",ressource->getRight().image);
+                try
+                {
+                    cv::imshow("Stereo camera left Image",ressource->getLeft().image);
+                    cv::imshow("Stereo camera right Image",ressource->getRight().image);
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << e.what() << '\n';
+                }
+                
             }
 
             if(ressource->setLeft(ImageStamped(time(0),half_left)) && ressource->setRight(ImageStamped(time(0),half_right)))
