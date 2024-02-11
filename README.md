@@ -39,7 +39,8 @@ make -j4
 - Executable  simple_camera __A simple executable to test the camera connection__. Provided by JetsonHacksNano. See more details at https://github.com/JetsonHacksNano/CSI-Camera
 
 ### Additional information 
-If you want to be able to see every step of the odometry calculation (key points, matching ....etc) and enable verbose options you should uncomment the line 7 in the matcher.hpp file. 
+If you want to be able to see every step of the odometry calculation (key points, matching ....etc) and enable verbose options you should uncomment the line 7 in the matcher.hpp file.
+robot upstart tutorial : https://roboticsbackend.com/make-ros-launch-start-on-boot-with-robot_upstart/
 
 **Warning** 
 The translation estimation is dommed to drift because the data provided by the imu is not accurate. A significant improvement will be to filter those data (ie kalman filter) before using them. This filter will be integrated in the next version of this project.
