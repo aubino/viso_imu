@@ -154,3 +154,172 @@ void RegHandler::unrefGstElements() {
     }
 }
 
+
+////////////////////////////////////// Using FFMPEG ////////////////////////////////////////////////////////////////
+extern "C" {
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libavutil/opt.h>
+#include <libavutil/time.h>
+}
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <chrono>
+#include <thread>
+
+class RegHandler {
+public:
+    RegHandler(const std::string &filename);
+    ~RegHandler();
+    
+    bool start();
+    void stop();
+    void feed(const std::vector<uint8_t> &h265Data);
+
+private:
+    std::string filename;
+    AVFormatContext *formatContext;
+    AVStream *videoStream;
+    int64_t pts;
+    bool isRunning;
+
+    void init_ffmpeg();
+    void cleanup_ffmpeg();
+};
+
+RegHandler::RegHandler(const std::string &filename)
+    : filename(filename), formatContext(nullptr), videoStream(nullptr), pts(0), isRunning(false) {
+    av_register_all();
+    avcodec_register_all();
+    avformat_network_init();
+}
+
+RegHandler::~RegHandler() {
+    stop();
+    cleanup_ffmpeg();
+}
+
+void RegHandler::init_ffmpeg() {
+    avformat_alloc_output_context2(&formatContext, nullptr, "mp4", filename.c_str());
+    if (!formatContext) {
+        throw std::runtime_error("Could not create output context");
+    }
+
+    AVCodec *codec = avcodec_find_encoder(AV_CODEC_ID_H265);
+    if (!codec) {
+        throw std::runtime_error("Codec not found");
+    }
+
+    videoStream = avformat_new_stream(formatContext, codec);
+    if (!videoStream) {
+        throw std::runtime_error("Failed allocating output stream");
+    }
+
+    AVCodecContext *codecContext = avcodec_alloc_context3(codec);
+    if (!codecContext) {
+        throw std::runtime_error("Could not allocate codec context");
+    }
+
+    codecContext->codec_id = AV_CODEC_ID_H265;
+    codecContext->codec_type = AVMEDIA_TYPE_VIDEO;
+    codecContext->time_base = {1, 30}; // 30 FPS
+    codecContext->framerate = {30, 1};
+    codecContext->gop_size = 12;
+    codecContext->pix_fmt = AV_PIX_FMT_YUV420P;
+
+    if (formatContext->oformat->flags & AVFMT_GLOBALHEADER) {
+        codecContext->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+    }
+
+    avcodec_parameters_from_context(videoStream->codecpar, codecContext);
+
+    if (avio_open(&formatContext->pb, filename.c_str(), AVIO_FLAG_WRITE) < 0) {
+        throw std::runtime_error("Could not open output file");
+    }
+
+    if (avformat_write_header(formatContext, nullptr) < 0) {
+        throw std::runtime_error("Error occurred when opening output file");
+    }
+}
+
+void RegHandler::cleanup_ffmpeg() {
+    if (formatContext) {
+        av_write_trailer(formatContext);
+        if (!(formatContext->oformat->flags & AVFMT_NOFILE)) {
+            avio_closep(&formatContext->pb);
+        }
+        avformat_free_context(formatContext);
+    }
+}
+
+bool RegHandler::start() {
+    if (isRunning) {
+        std::cerr << "Handler is already running." << std::endl;
+        return false;
+    }
+
+    try {
+        init_ffmpeg();
+        isRunning = true;
+    } catch (const std::exception &e) {
+        std::cerr << "Failed to start RegHandler: " << e.what() << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+void RegHandler::stop() {
+    if (!isRunning) {
+        std::cerr << "Handler is not running." << std::endl;
+        return;
+    }
+
+    cleanup_ffmpeg();
+    isRunning = false;
+}
+
+void RegHandler::feed(const std::vector<uint8_t> &h265Data) {
+    if (!isRunning) {
+        std::cerr << "Handler is not running. Cannot feed data." << std::endl;
+        return;
+    }
+
+    AVPacket packet;
+    av_init_packet(&packet);
+    packet.data = (uint8_t *)h265Data.data();
+    packet.size = h265Data.size();
+    packet.stream_index = videoStream->index;
+    packet.pts = pts;
+    packet.dts = pts;
+    packet.duration = av_rescale_q(1, {1, 30}, videoStream->time_base);
+    pts += packet.duration;
+
+    if (av_interleaved_write_frame(formatContext, &packet) < 0) {
+        std::cerr << "Error while writing video frame" << std::endl;
+    }
+}
+
+int main() {
+    RegHandler regHandler("output.mp4");
+
+    if (!regHandler.start()) {
+        return -1;
+    }
+
+    // Simulate receiving H.265 packets
+    for (int i = 0; i < 100; ++i) {
+        std::vector<uint8_t> h265Packet(1024); // Placeholder for H.265 data
+        std::fill(h265Packet.begin(), h265Packet.end(), rand() % 256); // Simulate H.265 data
+        regHandler.feed(h265Packet);
+        std::this_thread::sleep_for(std::chrono::milliseconds(33)); // Simulate 30 FPS
+    }
+
+    regHandler.stop();
+
+    return 0;
+}
+
+
