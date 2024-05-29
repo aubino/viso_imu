@@ -322,4 +322,40 @@ int main() {
     return 0;
 }
 
+////////////////////////////FFMPEG cmakelist //////////////////////////////////////////////
+cmake_minimum_required(VERSION 3.10)
+
+project(VideoMuxer)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+# Find FFmpeg package
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(AVFORMAT REQUIRED libavformat)
+pkg_check_modules(AVCODEC REQUIRED libavcodec)
+pkg_check_modules(AVUTIL REQUIRED libavutil)
+pkg_check_modules(SWSCALE REQUIRED libswscale)
+
+include_directories(${AVFORMAT_INCLUDE_DIRS})
+include_directories(${AVCODEC_INCLUDE_DIRS})
+include_directories(${AVUTIL_INCLUDE_DIRS})
+include_directories(${SWSCALE_INCLUDE_DIRS})
+
+link_directories(${AVFORMAT_LIBRARY_DIRS})
+link_directories(${AVCODEC_LIBRARY_DIRS})
+link_directories(${AVUTIL_LIBRARY_DIRS})
+link_directories(${SWSCALE_LIBRARY_DIRS})
+
+# Add executable
+add_executable(VideoMuxer main.cpp)
+
+# Link FFmpeg libraries
+target_link_libraries(VideoMuxer ${AVFORMAT_LIBRARIES} ${AVCODEC_LIBRARIES} ${AVUTIL_LIBRARIES} ${SWSCALE_LIBRARIES})
+
+
+//////////////////////////////////// Installations ///////////////////////////////////////////////////////////////
+sudo apt-get update
+sudo apt-get install libavcodec-dev libavformat-dev libavutil-dev libswscale-dev
+
 
