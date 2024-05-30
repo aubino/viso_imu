@@ -443,6 +443,23 @@ int main(int argc, char** argv) {
 
     return 0;
 }
+/////////////////////////////////Imurotator CmakeList //////////////////////////////////////////////////
+cmake_minimum_required(VERSION 3.0.2)
+project(imu_rotator)
 
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  sensor_msgs
+  Eigen3
+)
+
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIR}
+)
+
+add_executable(imu_rotator_node src/imu_rotator_node.cpp)
+target_link_libraries(imu_rotator_node ${catkin_LIBRARIES})
+//////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
