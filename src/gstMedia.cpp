@@ -357,5 +357,92 @@ target_link_libraries(VideoMuxer ${AVFORMAT_LIBRARIES} ${AVCODEC_LIBRARIES} ${AV
 //////////////////////////////////// Installations ///////////////////////////////////////////////////////////////
 sudo apt-get update
 sudo apt-get install libavcodec-dev libavformat-dev libavutil-dev libswscale-dev
+///////////////////////////////// Imu rotation /////////////////////////////////////////////////////////////////
+#include <ros/ros.h>
+#include <sensor_msgs/Imu.h>
+#include <Eigen/Geometry>
+#include <Eigen/Dense>
+
+// Function to rotate IMU data
+sensor_msgs::Imu rotateImuData(const sensor_msgs::Imu& imu_data, const Eigen::Quaterniond& rotation) {
+    sensor_msgs::Imu rotated_imu = imu_data;
+
+    // Convert ROS vectors to Eigen vectors
+    Eigen::Vector3d linear_acceleration(imu_data.linear_acceleration.x,
+                                        imu_data.linear_acceleration.y,
+                                        imu_data.linear_acceleration.z);
+    
+    Eigen::Vector3d angular_velocity(imu_data.angular_velocity.x,
+                                     imu_data.angular_velocity.y,
+                                     imu_data.angular_velocity.z);
+
+    // Rotate the vectors using the quaternion
+    Eigen::Vector3d rotated_acceleration = rotation * linear_acceleration;
+    Eigen::Vector3d rotated_velocity = rotation * angular_velocity;
+
+    // Convert Eigen vectors back to ROS vectors
+    rotated_imu.linear_acceleration.x = rotated_acceleration.x();
+    rotated_imu.linear_acceleration.y = rotated_acceleration.y();
+    rotated_imu.linear_acceleration.z = rotated_acceleration.z();
+    
+    rotated_imu.angular_velocity.x = rotated_velocity.x();
+    rotated_imu.angular_velocity.y = rotated_velocity.y();
+    rotated_imu.angular_velocity.z = rotated_velocity.z();
+
+    return rotated_imu;
+}
+
+// ROS node class
+class ImuRotator {
+public:
+    ImuRotator(ros::NodeHandle& nh)
+        : nh_(nh) {
+        if (!nh_.getParam("R_IMU_to_FCU", rotation_matrix_)) {
+            ROS_ERROR("Failed to get param 'R_IMU_to_FCU'");
+            throw std::runtime_error("Failed to get param 'R_IMU_to_FCU'");
+        }
+
+        // Convert the parameter to Eigen::Matrix3d
+        Eigen::Matrix3d rotation_matrix;
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                rotation_matrix(i, j) = rotation_matrix_[i * 3 + j];
+            }
+        }
+
+        // Convert Eigen::Matrix3d to Eigen::Quaterniond
+        rotation_ = Eigen::Quaterniond(rotation_matrix);
+
+        imu_sub_ = nh_.subscribe("imu/data", 10, &ImuRotator::imuCallback, this);
+        imu_pub_ = nh_.advertise<sensor_msgs::Imu>("imu/data_rotated", 10);
+    }
+
+private:
+    void imuCallback(const sensor_msgs::Imu::ConstPtr& msg) {
+        sensor_msgs::Imu rotated_imu = rotateImuData(*msg, rotation_);
+        imu_pub_.publish(rotated_imu);
+    }
+
+    ros::NodeHandle nh_;
+    ros::Subscriber imu_sub_;
+    ros::Publisher imu_pub_;
+    Eigen::Quaterniond rotation_;
+    std::vector<double> rotation_matrix_;
+};
+
+int main(int argc, char** argv) {
+    ros::init(argc, argv, "imu_rotator");
+    ros::NodeHandle nh("~");
+
+    try {
+        ImuRotator imu_rotator(nh);
+        ros::spin();
+    } catch (const std::exception& e) {
+        ROS_ERROR("%s", e.what());
+    }
+
+    return 0;
+}
+
 
 
