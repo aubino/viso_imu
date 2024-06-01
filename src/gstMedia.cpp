@@ -461,5 +461,4 @@ include_directories(
 add_executable(imu_rotator_node src/imu_rotator_node.cpp)
 target_link_libraries(imu_rotator_node ${catkin_LIBRARIES})
 //////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
+https://discuss.luxonis.com/d/1044-about-oak-d-pro-w-imu-coordinate-system/4
