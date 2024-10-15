@@ -1,0 +1,9 @@
+- https://superuser.com/questions/1779799/xrandr-cant-open-display-trying-to-add-fake-display
+- https://bbs.archlinux.org/viewtopic.php?id=284242
+- https://unix.stackexchange.com/questions/585069/unable-to-add-a-virtual-display-to-xorg/585078#585078
+- https://github.com/DisplayLink/evdi/blob/adf6eabb2a8344bea10836f063b7e2d27cb1530d/module/Makefile#L84
+- https://unix.stackexchange.com/questions/559918/how-to-add-virtual-monitor-with-nvidia-proprietary-driver
+- https://unix.stackexchange.com/questions/378373/add-virtual-output-to-xorg
+- https://github.com/DisplayLink/evdi/tree/v1.7.x
+- https://github.com/DisplayLink/evdi/issues/187
+- https://forums.developer.nvidia.com/t/building-displaylink-evdi/73626
